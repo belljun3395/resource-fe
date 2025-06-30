@@ -7,11 +7,7 @@ import {
   saveEmailToCookie,
   deleteCookie,
 } from "@/utils/cookies";
-
-interface UserState {
-  username: string;
-  email: string;
-}
+import type { UserState } from "@/types/user";
 
 export const useUserStore = defineStore("user", () => {
   const state = reactive<UserState>({
@@ -23,11 +19,11 @@ export const useUserStore = defineStore("user", () => {
     return state.username !== "" && state.email !== "";
   }
 
-  function login(usernameParam: string, emailParam: string) {
-    state.username = usernameParam;
-    state.email = emailParam;
-    saveUserToCookie(usernameParam);
-    saveEmailToCookie(emailParam);
+  function login(userState: UserState) {
+    state.username = userState.username;
+    state.email = userState.email;
+    saveUserToCookie(userState.username);
+    saveEmailToCookie(userState.email);
   }
 
   function logout() {
