@@ -42,3 +42,6 @@ out/
 .cache/
 .parcel-cache/
 .vite/
+
+# History
+.history/
