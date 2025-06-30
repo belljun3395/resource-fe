@@ -23,20 +23,17 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  if (to.path === "/" || to.path === "/login") {
-    if (userStore.isLogin()) {
-      next("/main");
-    } else {
-      next("/login");
-    }
+
+  if ((to.path === "/" || to.path === "/login") && userStore.isLogin()) {
+    next("/main");
     return;
   }
 
   if (to.meta.auth && !userStore.isLogin()) {
-    console.log("인증이 필요합니다");
     next("/login");
     return;
   }
+
   next();
 });
 
