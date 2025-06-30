@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from "vue";
+import { ref } from "vue";
 import type { UserState } from "@/types/user";
 
 const props = defineProps({

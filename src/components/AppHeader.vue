@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import logoImg from "@/assets/images/logo.png";
 import avatarImg from "@/assets/images/icon_avatar.svg";
 
