@@ -4,23 +4,37 @@
     <!-- login form -->
     <div class="login-box">
       <h2>{{ formTitle }}</h2>
-      <form @submit.prevent="onSubmit">
-        <input
-          v-model="email"
-          type="email"
-          :placeholder="emailPlaceholder"
-          required
-        />
-        <input
-          v-model="name"
-          type="name"
-          :placeholder="namePlaceholder"
-          required
-        />
-        <button type="submit" :disabled="loading">
-          {{ loading ? buttonLoadingText : buttonLoginText }}
-        </button>
-      </form>
+      <a-form layout="vertical" @submit.prevent="onSubmit">
+        <a-form-item>
+          <a-input
+            v-model:value="email"
+            type="email"
+            :placeholder="emailPlaceholder"
+            size="large"
+            autocomplete="email"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-input
+            v-model:value="name"
+            type="text"
+            :placeholder="namePlaceholder"
+            size="large"
+            autocomplete="username"
+          />
+        </a-form-item>
+        <a-form-item>
+          <a-button
+            type="primary"
+            html-type="submit"
+            :loading="loading"
+            block
+            size="large"
+          >
+            {{ loading ? buttonLoadingText : buttonLoginText }}
+          </a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>
@@ -71,24 +85,26 @@ const onSubmit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7fafd;
+  background: #f0f2f5; /* Ant Design 기본 배경 */
 }
 
 .login-box {
   width: 100%;
-  max-width: 370px;
-  padding: 40px 32px 32px 32px;
-  border-radius: 14px;
+  max-width: 340px;
+  padding: 32px 28px 24px 28px;
+  border-radius: 10px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   background: #fff;
   text-align: center;
 }
 
 .login-box h2 {
-  margin-bottom: 10px;
-  font-size: 1.45rem;
-  font-weight: 700;
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: #222;
+  letter-spacing: -0.5px;
+  opacity: 0.85;
 }
 
 .desc {
@@ -98,53 +114,13 @@ const onSubmit = () => {
   line-height: 1.5;
 }
 
-form input[type="email"],
-form input[type="password"],
-form input[type="name"] {
-  width: 100%;
-  padding: 11px 13px;
-  margin-bottom: 13px;
-  border: 1px solid #dbe4ee;
-  border-radius: 7px;
-  font-size: 1rem;
-  background: #f8fafc;
-  transition: border 0.2s;
+:deep(.ant-input) {
+  border-radius: 6px;
+  background: #fafafa;
 }
 
-form input:focus {
-  border: 1.5px solid #1976d2;
-  outline: none;
-  background: #fff;
-}
-
-form input::placeholder {
-  color: #b0b8c1;
-  font-size: 0.98rem;
-}
-
-button[type="submit"] {
-  width: 100%;
-  padding: 11px 0;
-  background: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  font-size: 1.08rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
-  margin-top: 5px;
-  margin-bottom: 2px;
-}
-
-button[type="submit"]:hover:not([disabled]) {
-  background: #1256a3;
-}
-
-button[disabled] {
-  background: #e0e0e0;
-  color: #888;
-  cursor: not-allowed;
+:deep(.ant-btn) {
+  border-radius: 6px;
 }
 
 @media (max-width: 480px) {
