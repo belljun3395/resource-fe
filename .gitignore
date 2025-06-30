@@ -45,3 +45,5 @@ out/
 
 # History
 .history/
+*storybook.log
+storybook-static
