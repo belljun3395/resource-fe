@@ -1,26 +1,66 @@
 <template>
-  <router-view />
+  <main id="wrap">
+    <AppHeader />
+    <router-view />
+  </main>
 </template>
 
+<script setup lang="ts">
+import AppHeader from "@/components/AppHeader.vue";
+</script>
+
 <style>
-#app {
-  font-family: Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+wrap {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: #242424;
 }
 
-nav {
-  padding: 30px;
+*,
+:after,
+:before {
+  box-sizing: border-box;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+* {
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+div {
+  display: block;
+  unicode-bidi: isolate;
+}
+
+#wrap {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-default);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
 }
 </style>
