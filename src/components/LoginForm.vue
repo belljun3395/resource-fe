@@ -3,26 +3,22 @@
   <div class="login-container">
     <!-- login form -->
     <div class="login-box">
-      <h2>{{ $t("message.login.form-title") }}</h2>
-      <form @submit.prevent="onLogin">
+      <h2>{{ formTitle }}</h2>
+      <form @submit.prevent="onSubmit">
         <input
           v-model="email"
           type="email"
-          :placeholder="$t('message.login.input-email')"
+          :placeholder="emailPlaceholder"
           required
         />
         <input
           v-model="name"
           type="name"
-          :placeholder="$t('message.login.input-name')"
+          :placeholder="namePlaceholder"
           required
         />
         <button type="submit" :disabled="loading">
-          {{
-            loading
-              ? $t("message.login.button-loading")
-              : $t("message.login.button-login")
-          }}
+          {{ loading ? buttonLoadingText : buttonLoginText }}
         </button>
       </form>
     </div>
@@ -30,23 +26,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/store/userStore";
+import { ref, defineProps, defineEmits } from "vue";
+import type { UserState } from "@/types/user";
 
-const router = useRouter();
-const userStore = useUserStore();
+const props = defineProps({
+  formTitle: {
+    type: String,
+    required: true,
+  },
+  emailPlaceholder: {
+    type: String,
+    required: true,
+  },
+  namePlaceholder: {
+    type: String,
+    required: true,
+  },
+  buttonLoadingText: {
+    type: String,
+    required: true,
+  },
+  buttonLoginText: {
+    type: String,
+    required: true,
+  },
+  loading: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emits = defineEmits<{ (e: "login", payload: UserState): void }>();
 const email = ref<string>("");
 const name = ref<string>("");
-const loading = ref<boolean>(false);
 
-const onLogin = () => {
-  loading.value = true;
-  setTimeout(() => {
-    loading.value = false;
-    userStore.login(name.value, email.value);
-    router.push("/main");
-  }, 500);
+const onSubmit = () => {
+  emits("login", { username: name.value, email: email.value });
 };
 </script>
 
