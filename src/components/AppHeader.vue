@@ -3,18 +3,18 @@
     <!-- logo -->
     <h1 class="logo">
       <a class="router-link-active">
-        <img src="@/assets/images/logo.png" alt="logo" />
+        <img :src="logoImg" alt="logo" />
       </a>
     </h1>
     <!-- header menu -->
     <div class="header-menu-wrapper">
       <div class="header-menu-wrapper-right">
-        <div class="auth-menu" v-if="userStore.isLogin()">
+        <div class="auth-menu" v-if="isLogin">
           <div class="profile-setting">
             <span
               class="ant-avatar ant-avatar-sm ant-avatar-circle ant-avatar-image"
             >
-              <img src="@/assets/images/icon_avatar.svg" />
+              <img :src="avatarImg" />
             </span>
             <div class="personal-information">
               <span class="position">{{ email }}</span>
@@ -28,12 +28,15 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from "@/store/userStore";
-import { computed } from "vue";
+import { defineProps } from "vue";
+import logoImg from "@/assets/images/logo.png";
+import avatarImg from "@/assets/images/icon_avatar.svg";
 
-const userStore = useUserStore();
-const username = computed<string>(() => userStore.state.username);
-const email = computed<string>(() => userStore.state.email);
+defineProps<{
+  username?: string;
+  email?: string;
+  isLogin?: boolean;
+}>();
 </script>
 
 <style scoped>

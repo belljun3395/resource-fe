@@ -1,12 +1,19 @@
 <template>
   <main id="wrap">
-    <AppHeader />
+    <AppHeader
+      :username="userStore.state.username"
+      :email="userStore.state.email"
+      :isLogin="userStore.isLogin()"
+    />
     <router-view />
   </main>
 </template>
 
 <script setup lang="ts">
 import AppHeader from "@/components/AppHeader.vue";
+import { useUserStore } from "@/store/userStore";
+
+const userStore = useUserStore();
 </script>
 
 <style>
