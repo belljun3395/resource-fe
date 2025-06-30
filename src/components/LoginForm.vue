@@ -3,23 +3,25 @@
   <div class="login-container">
     <!-- login form -->
     <div class="login-box">
-      <h2>{{ $t("message.login-form-title") }}</h2>
+      <h2>{{ $t("message.login.form-title") }}</h2>
       <form @submit.prevent="onLogin">
         <input
           v-model="email"
           type="email"
-          :placeholder="$t('message.input-email')"
+          :placeholder="$t('message.login.input-email')"
           required
         />
         <input
           v-model="name"
           type="name"
-          :placeholder="$t('message.input-name')"
+          :placeholder="$t('message.login.input-name')"
           required
         />
         <button type="submit" :disabled="loading">
           {{
-            loading ? $t("message.login-loading") : $t("message.login-button")
+            loading
+              ? $t("message.login.button-loading")
+              : $t("message.login.button-login")
           }}
         </button>
       </form>

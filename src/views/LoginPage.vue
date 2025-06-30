@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="page-header">{{ $t("message.login-page-title") }}</h1>
+    <h1 class="page-header">{{ $t("message.login.page-title") }}</h1>
     <LoginForm></LoginForm>
   </div>
 </template>
