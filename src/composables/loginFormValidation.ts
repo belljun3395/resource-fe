@@ -1,7 +1,8 @@
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import type { LoginMsg } from "@/types/message/loginMsg";
 
-export const useLoginFormValidation = (loginMsg: Record<string, string>) => {
+export const useLoginFormValidation = (loginMsg: LoginMsg) => {
   const schema = yup.object({
     email: yup
       .string()

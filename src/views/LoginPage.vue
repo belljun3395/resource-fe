@@ -8,13 +8,7 @@
       :button-loading-text="t('message.login.button-loading')"
       :button-login-text="t('message.login.button-login')"
       :loading="loading"
-      :login-msg="{
-        'error-email-required': t('message.login.error-email-required'),
-        'error-email-invalid': t('message.login.error-email-invalid'),
-        'error-name-required': t('message.login.error-name-required'),
-        'error-name-min': t('message.login.error-name-min'),
-        'error-name-special': t('message.login.error-name-special'),
-      }"
+      :login-msg="loginMsg"
       @login="onLogin"
     />
   </div>
@@ -27,11 +21,20 @@ import { useUserStore } from "@/store/userStore";
 import LoginForm from "@/components/LoginForm.vue";
 import { useI18n } from "vue-i18n";
 import type { UserState } from "@/types/user";
+import type { LoginMsg } from "@/types/message/loginMsg";
 
 const { t } = useI18n();
 const router = useRouter();
 const userStore = useUserStore();
 const loading = ref(false);
+
+const loginMsg: LoginMsg = {
+  "error-email-required": t("message.login.error-email-required"),
+  "error-email-invalid": t("message.login.error-email-invalid"),
+  "error-name-required": t("message.login.error-name-required"),
+  "error-name-min": t("message.login.error-name-min"),
+  "error-name-special": t("message.login.error-name-special"),
+};
 
 const onLogin = (userState: UserState) => {
   loading.value = true;

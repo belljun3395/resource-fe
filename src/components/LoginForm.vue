@@ -45,6 +45,7 @@
 import type { UserState } from "@/types/user";
 import { useLoginFormValidation } from "@/composables/loginFormValidation";
 import type { PropType } from "vue";
+import type { LoginMsg } from "@/types/message/loginMsg";
 
 const props = defineProps({
   formTitle: {
@@ -72,7 +73,7 @@ const props = defineProps({
     required: true,
   },
   loginMsg: {
-    type: Object as PropType<Record<string, string>>,
+    type: Object as PropType<LoginMsg>,
     required: true,
   },
 });

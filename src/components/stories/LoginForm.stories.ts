@@ -1,6 +1,7 @@
 // @ts-nocheck
 import LoginForm from "@/components/LoginForm.vue";
 import { messages } from "@/locales/index";
+import type { LoginMsg } from "@/types/message/loginMsg";
 
 export default {
   title: "Components/LoginForm",
@@ -9,6 +10,22 @@ export default {
 
 const koLoginMsg = messages.ko.message.login;
 const enLoginMsg = messages.en.message.login;
+
+const koLoginMsgObj: LoginMsg = {
+  "error-email-required": koLoginMsg["error-email-required"],
+  "error-email-invalid": koLoginMsg["error-email-invalid"],
+  "error-name-required": koLoginMsg["error-name-required"],
+  "error-name-min": koLoginMsg["error-name-min"],
+  "error-name-special": koLoginMsg["error-name-special"],
+};
+
+const enLoginMsgObj: LoginMsg = {
+  "error-email-required": enLoginMsg["error-email-required"],
+  "error-email-invalid": enLoginMsg["error-email-invalid"],
+  "error-name-required": enLoginMsg["error-name-required"],
+  "error-name-min": enLoginMsg["error-name-min"],
+  "error-name-special": enLoginMsg["error-name-special"],
+};
 
 const Template = (args: any) => ({
   components: { LoginForm },
@@ -41,13 +58,7 @@ Default.args = {
   buttonLoadingText: koLoginMsg["button-loading"],
   buttonLoginText: koLoginMsg["button-login"],
   loading: false,
-  loginMsg: {
-    "error-email-required": koLoginMsg["error-email-required"],
-    "error-email-invalid": koLoginMsg["error-email-invalid"],
-    "error-name-required": koLoginMsg["error-name-required"],
-    "error-name-min": koLoginMsg["error-name-min"],
-    "error-name-special": koLoginMsg["error-name-special"],
-  },
+  loginMsg: koLoginMsgObj,
 };
 
 export const Loading = Template.bind({});
@@ -58,11 +69,5 @@ Loading.args = {
   buttonLoadingText: koLoginMsg["button-loading"],
   buttonLoginText: koLoginMsg["button-login"],
   loading: true,
-  loginMsg: {
-    "error-email-required": koLoginMsg["error-email-required"],
-    "error-email-invalid": koLoginMsg["error-email-invalid"],
-    "error-name-required": koLoginMsg["error-name-required"],
-    "error-name-min": koLoginMsg["error-name-min"],
-    "error-name-special": koLoginMsg["error-name-special"],
-  },
+  loginMsg: koLoginMsgObj,
 };
