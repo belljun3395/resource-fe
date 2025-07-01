@@ -8,6 +8,13 @@
       :button-loading-text="t('message.login.button-loading')"
       :button-login-text="t('message.login.button-login')"
       :loading="loading"
+      :login-msg="{
+        'error-email-required': t('message.login.error-email-required'),
+        'error-email-invalid': t('message.login.error-email-invalid'),
+        'error-name-required': t('message.login.error-name-required'),
+        'error-name-min': t('message.login.error-name-min'),
+        'error-name-special': t('message.login.error-name-special'),
+      }"
       @login="onLogin"
     />
   </div>

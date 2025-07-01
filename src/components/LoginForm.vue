@@ -13,6 +13,7 @@
             size="large"
             autocomplete="email"
           />
+          <div v-if="errors.email" class="error-msg">{{ errors.email }}</div>
         </a-form-item>
         <a-form-item>
           <a-input
@@ -22,6 +23,7 @@
             size="large"
             autocomplete="username"
           />
+          <div v-if="errors.name" class="error-msg">{{ errors.name }}</div>
         </a-form-item>
         <a-form-item>
           <a-button
@@ -40,8 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { UserState } from "@/types/user";
+import { useLoginFormValidation } from "@/composables/loginFormValidation";
+import type { PropType } from "vue";
 
 const props = defineProps({
   formTitle: {
@@ -68,15 +71,21 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  loginMsg: {
+    type: Object as PropType<Record<string, string>>,
+    required: true,
+  },
 });
 
 const emits = defineEmits<{ (e: "login", payload: UserState): void }>();
-const email = ref<string>("");
-const name = ref<string>("");
 
-const onSubmit = () => {
-  emits("login", { username: name.value, email: email.value });
-};
+const { email, name, errors, handleSubmit } = useLoginFormValidation(
+  props.loginMsg
+);
+
+const onSubmit = handleSubmit((values) => {
+  emits("login", { username: values.name, email: values.email });
+});
 </script>
 
 <style scoped>
@@ -128,5 +137,12 @@ const onSubmit = () => {
     padding: 28px 8vw 24px 8vw;
     max-width: 98vw;
   }
+}
+
+.error-msg {
+  color: #ff4d4f;
+  font-size: 0.9em;
+  margin-top: 4px;
+  text-align: left;
 }
 </style>
