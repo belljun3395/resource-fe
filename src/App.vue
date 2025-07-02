@@ -5,7 +5,9 @@
       :email="userStore.state.email"
       :isLogin="userStore.isLogin()"
     />
-    <router-view />
+    <a-layout>
+      <router-view />
+    </a-layout>
   </main>
 </template>
 
@@ -17,46 +19,68 @@ const userStore = useUserStore();
 </script>
 
 <style>
-wrap {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  font-family: Pretendard;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 18px;
-  color: #242424;
+/* ==========================================================================
+   Font Face Declarations
+   ========================================================================== */
+@font-face {
+  font-family: "Pretendard";
+  src: url("@/assets/fonts/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* ==========================================================================
+   Global CSS Variables
+   ========================================================================== */
+:root {
+  /* Typography */
+  --font-family-primary: "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-weight-normal: 400;
+  --font-size-base: 13px;
+  --line-height-base: 18px;
+
+  /* Colors */
+  --text-default: #242424;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+
+  /* Layout */
+  --header-height: 50px;
+  --viewport-full: 100vw;
+  --viewport-height: 100vh;
+}
+
+/* ==========================================================================
+   Global Reset & Base Styles
+   ========================================================================== */
+
+/* Box-sizing reset for all elements */
 *,
-:after,
-:before {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+/* Global reset - remove default margins, paddings, and inherit font styles */
 * {
-  padding: 0;
   margin: 0;
+  padding: 0;
   font: inherit;
   color: inherit;
 }
 
+/* Ensure proper block display for div elements */
 div {
   display: block;
   unicode-bidi: isolate;
 }
 
-#wrap {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  font-family: Pretendard;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 18px;
-  color: var(--text-default);
-}
+/* ==========================================================================
+   Media Elements Optimization
+   ========================================================================== */
 
+/* Responsive media elements */
 img,
 picture,
 video,
@@ -64,10 +88,38 @@ canvas,
 svg {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
+/* Modern image overflow handling */
 img {
   overflow-clip-margin: content-box;
   overflow: clip;
+}
+
+/* ==========================================================================
+   Application Layout
+   ========================================================================== */
+
+/* Main application container */
+#wrap {
+  width: var(--viewport-full);
+  height: var(--viewport-height);
+  overflow: hidden;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--text-default);
+}
+
+/* ==========================================================================
+   Ant Design Framework Overrides
+   ========================================================================== */
+
+/* Adjust layout to accommodate fixed header */
+.ant-layout {
+  padding-top: var(--header-height); /* Space for AppHeader component */
+  min-height: calc(var(--viewport-height) - var(--header-height));
 }
 </style>
