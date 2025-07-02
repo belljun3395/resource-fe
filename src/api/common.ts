@@ -11,3 +11,9 @@ function createInstance(): AxiosInstance {
 }
 
 export const instance = createInstance();
+
+export interface ApiResponse<T> {
+  data: T;
+  message: string;
+  code: string;
+}
