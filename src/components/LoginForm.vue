@@ -3,13 +3,13 @@
   <div class="login-container">
     <!-- login form -->
     <div class="login-box">
-      <h2>{{ formTitle }}</h2>
+      <h2>{{ t('message.login.form-title') }}</h2>
       <a-form layout="vertical" @submit.prevent="onSubmit">
         <a-form-item>
           <a-input
             v-model:value="email"
             type="email"
-            :placeholder="emailPlaceholder"
+            :placeholder="t('message.login.input-email')"
             size="large"
             autocomplete="email"
           />
@@ -19,7 +19,7 @@
           <a-input
             v-model:value="name"
             type="text"
-            :placeholder="namePlaceholder"
+            :placeholder="t('message.login.input-name')"
             size="large"
             autocomplete="username"
           />
@@ -33,7 +33,7 @@
             block
             size="large"
           >
-            {{ loading ? buttonLoadingText : buttonLoginText }}
+            {{ loading ? t('message.login.button-loading') : t('message.login.button-login') }}
           </a-button>
         </a-form-item>
       </a-form>
@@ -42,48 +42,39 @@
 </template>
 
 <script setup lang="ts">
+/* ==========================================================================
+   Imports
+   ========================================================================== */
 import type { UserState } from "@/types/user";
 import { useLoginFormValidation } from "@/composables/loginFormValidation";
-import type { PropType } from "vue";
-import type { LoginMsg } from "@/types/message/loginMsg";
+import { useI18n } from "vue-i18n";
 
-const props = defineProps({
-  formTitle: {
-    type: String,
-    required: true,
-  },
-  emailPlaceholder: {
-    type: String,
-    required: true,
-  },
-  namePlaceholder: {
-    type: String,
-    required: true,
-  },
-  buttonLoadingText: {
-    type: String,
-    required: true,
-  },
-  buttonLoginText: {
-    type: String,
-    required: true,
-  },
-  loading: {
-    type: Boolean,
-    required: true,
-  },
-  loginMsg: {
-    type: Object as PropType<LoginMsg>,
-    required: true,
-  },
-});
+/* ==========================================================================
+   Props
+   ========================================================================== */
+interface LoginFormProps {
+  loading: boolean;
+}
+defineProps<LoginFormProps>();
 
+/* ==========================================================================
+   I18n
+   ========================================================================== */
+const { t } = useI18n();
+
+/* ==========================================================================
+   Emits
+   ========================================================================== */
 const emits = defineEmits<{ (e: "login", payload: UserState): void }>();
 
-const { email, name, errors, handleSubmit } = useLoginFormValidation(
-  props.loginMsg
-);
+/* ==========================================================================
+   Form Validation
+   ========================================================================== */
+const { email, name, errors, handleSubmit } = useLoginFormValidation();
 
+/* ==========================================================================
+   Event Handlers
+   ========================================================================== */
 const onSubmit = handleSubmit((values) => {
   emits("login", { username: values.name, email: values.email });
 });
