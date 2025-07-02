@@ -33,7 +33,7 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { VmInstance } from "@/types/vm";
-import { vmApi } from "@/api/vm";
+import { getVmApi } from "@/api/vm";
 import { VmInstanceDetails } from "@/components/vm";
 
 /* ==========================================================================
@@ -72,6 +72,7 @@ const isLoading = ref(true);
 /* 서버에서 인스턴스 데이터를 가져와서 화면에 반영 */
 const loadInstanceData = async () => {
   try {
+    const vmApi = await getVmApi();
     const apiData = await vmApi.getInstance(props.instanceId);
     instanceDetails.value = new VmInstance({
       name: apiData.name,
