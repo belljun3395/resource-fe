@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1 class="page-header">{{ t("message.login.page-title") }}</h1>
     <LoginForm
       :loading="loading"
       @login="onLogin"
