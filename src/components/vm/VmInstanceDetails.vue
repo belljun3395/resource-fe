@@ -1,5 +1,5 @@
 <template>
-  <div class="detail-section">
+  <div class="detail-section" data-testid="vm-instance-details">
     <a-descriptions :column="1" bordered>
       <a-descriptions-item :label="t('message.vm.instance.label-name')">{{
         instanceDetails.name
