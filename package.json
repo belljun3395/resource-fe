@@ -16,6 +16,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@tanstack/vue-query": "^5.74.6",
     "@types/axios": "^0.14.4",
     "ant-design-vue": "4.0.0-rc.6",
