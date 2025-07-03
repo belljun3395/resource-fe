@@ -82,7 +82,6 @@ const loadInstanceData = async () => {
       host: apiData.host,
     });
   } catch (error) {
-    message.error("인스턴스 정보를 불러오는데 실패했습니다.");
     console.error("Failed to load instance data:", error);
   } finally {
     isLoading.value = false;
