@@ -71,8 +71,8 @@ export class VmInstance {
   public readonly name: string;
   /** 인스턴스 고유 식별자 (읽기 전용) */
   public readonly id: string;
-  /** 전원 상태 (private으로 캡슐화하여 getter를 통해서만 접근 가능) */
-  private readonly _powerState: PowerStatusString;
+  /** 현재 전원 상태 (읽기 전용) */
+  public readonly powerState: PowerStatusString;
   /** 사용자 정의 별칭 (읽기 전용) */
   public readonly alias: string;
   /** 호스트 서버 정보 (읽기 전용) */
@@ -85,17 +85,9 @@ export class VmInstance {
   constructor(data: VmInstanceData) {
     this.name = data.name;
     this.id = data.id;
-    this._powerState = data.powerState;
+    this.powerState = data.powerState;
     this.alias = data.alias;
     this.host = data.host;
-  }
-
-  /**
-   * 전원 상태를 문자열로 반환하는 getter
-   * @returns PowerStatusString 타입의 전원 상태 (예: "RUNNING")
-   */
-  get powerState(): PowerStatusString {
-    return this._powerState;
   }
 
   /**
@@ -103,6 +95,6 @@ export class VmInstance {
    * @returns PowerStatusCode 타입의 전원 상태 코드 (예: "4")
    */
   get powerStateCode(): PowerStatusCode {
-    return getPowerStatusCode(this._powerState);
+    return getPowerStatusCode(this.powerState);
   }
 }
