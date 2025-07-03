@@ -24,6 +24,44 @@ export type PowerStatusString = keyof typeof PowerStatus;
 export type PowerStatusCode = `${PowerStatus}`;
 
 /**
+ * VM 인스턴스 파워 액션을 나타내는 열거형
+ * 서버 API의 InstancePowerStatusAction과 매핑됨
+ */
+export enum PowerAction {
+  /** 인스턴스 시작 (actionCode: 0L) */
+  START = "start",
+  /** 인스턴스 종료 (actionCode: 1L) */
+  SHUTDOWN = "shutdown",
+  /** 인스턴스 재부팅 (actionCode: 2L) */
+  REBOOT = "reboot",
+  /** 인스턴스 일시정지 (actionCode: 3L) */
+  PAUSE = "pause",
+}
+
+/** PowerAction의 값들을 유니온 타입으로 표현 */
+export type PowerActionString = `${PowerAction}`;
+
+/** PowerAction과 해당하는 서버 액션 코드의 매핑 */
+export const POWER_ACTION_CODE_MAP: Record<PowerActionString, string> = {
+  [PowerAction.START]: "0",
+  [PowerAction.SHUTDOWN]: "1",
+  [PowerAction.REBOOT]: "2",
+  [PowerAction.PAUSE]: "3",
+} as const;
+
+/** 서버에 전송되는 파워 액션 코드 타입 */
+export type PowerActionCode = (typeof POWER_ACTION_CODE_MAP)[PowerActionString];
+
+/**
+ * PowerAction을 서버 액션 코드로 변환하는 유틸리티 함수
+ * @param action - 변환할 파워 액션
+ * @returns 해당하는 서버 액션 코드
+ */
+export function getPowerActionCode(action: PowerActionString): string {
+  return POWER_ACTION_CODE_MAP[action];
+}
+
+/**
  * VM 인스턴스의 기본 데이터 구조를 정의하는 인터페이스
  * VmInstance 클래스의 생성자에서 사용됨
  */

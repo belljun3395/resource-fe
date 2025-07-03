@@ -25,3 +25,10 @@ export interface VmInstanceApiResponse {
   source: VmSource;
   flavor: VmFlavor;
 }
+
+export interface PowerStatusUpdateResponse {
+  success: boolean;
+  message?: string;
+  instanceId: string | number;
+  newPowerStatus?: PowerStatusString;
+}
