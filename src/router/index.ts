@@ -14,6 +14,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/:pathMatch(.*)*",
     component: () => import("@/views/NotFoundPage.vue"),
   },
+  {
+    path: "/servers/instances/:instanceId",
+    component: () => import("@/views/vm/InstanceDetailView.vue"),
+    props: true,
+    meta: { auth: true },
+  },
 ];
 
 const router = createRouter({
@@ -24,7 +30,10 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
 
-  if ((to.path === "/" || to.path === "/login") && userStore.isLogin()) {
+  if (
+    (to.path === "/" || to.path.toLocaleLowerCase() === "/login") &&
+    userStore.isLogin()
+  ) {
     next("/main");
     return;
   }
