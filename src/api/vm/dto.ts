@@ -25,3 +25,9 @@ export interface VmInstanceApiResponse {
   source: VmSource;
   flavor: VmFlavor;
 }
+
+export interface VmDeleteApiResponse {
+  instanceId: number;
+  isAccepted: boolean;
+  isDeleted: boolean;
+}
