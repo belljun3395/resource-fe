@@ -122,4 +122,16 @@ img {
   padding-top: var(--header-height); /* Space for AppHeader component */
   min-height: calc(var(--viewport-height) - var(--header-height));
 }
+
+/* ==========================================================================
+   Message Component Positioning
+   ========================================================================== */
+
+/* Adjust Ant Design message position to avoid header overlap */
+.ant-message {
+  top: calc(
+    var(--header-height) + 16px
+  ) !important; /* Header height + margin */
+  z-index: 1054 !important; /* Higher than header z-index (1053) */
+}
 </style>
