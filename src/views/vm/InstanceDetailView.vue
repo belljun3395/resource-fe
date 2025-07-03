@@ -13,7 +13,12 @@
         </a-breadcrumb>
       </template>
       <template #extra>
-        <a-button key="edit" type="primary">수정</a-button>
+        <VmInstancePowerStatusDropdown
+          :powerState="instanceDetails.powerState"
+          :instanceId="props.instanceId"
+          :loading="isPowerActionLoading"
+          @powerStatusChange="handlePowerStatusAction"
+        />
         <a-button key="delete">삭제</a-button>
       </template>
     </a-page-header>
@@ -32,9 +37,17 @@
    ========================================================================== */
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { VmInstance } from "@/types/vm";
+import { message } from "ant-design-vue";
+import {
+  VmInstance,
+  getPowerActionCode,
+  type PowerActionString,
+} from "@/types/vm";
 import { getVmApi } from "@/api/vm";
-import { VmInstanceDetails } from "@/components/vm";
+import {
+  VmInstanceDetails,
+  VmInstancePowerStatusDropdown,
+} from "@/components/vm";
 
 /* ==========================================================================
    Props
@@ -65,6 +78,7 @@ const instanceDetails = ref<VmInstance>(
 
 /* 로딩 상태 관리 */
 const isLoading = ref(true);
+const isPowerActionLoading = ref(false);
 
 /* ==========================================================================
    API Functions
@@ -85,6 +99,45 @@ const loadInstanceData = async () => {
     console.error("Failed to load instance data:", error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+/* ==========================================================================
+   Event Handlers
+   ========================================================================== */
+/* 파워 상태 액션 핸들러 */
+const handlePowerStatusAction = async (action: PowerActionString) => {
+  isPowerActionLoading.value = true;
+
+  /* 작업 시작 알림 */
+  const hideProgressMessage = message.loading(
+    t("message.vm.instance.action-in-progress", { action }),
+    0 // 수동으로 닫을 때까지 유지
+  );
+
+  try {
+    const vmApi = await getVmApi();
+    const actionCode = getPowerActionCode(action);
+    await vmApi.updatePowerStatus(props.instanceId, actionCode);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 성공 메시지 표시 */
+    message.success(t("message.vm.instance.action-success", { action }));
+
+    /* 인스턴스 정보 새로고침 */
+    await loadInstanceData();
+  } catch (error) {
+    console.error("Failed to update power status:", error);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 에러 메시지 표시 */
+    message.error(t("message.vm.instance.action-error"));
+  } finally {
+    isPowerActionLoading.value = false;
   }
 };
 
