@@ -81,7 +81,9 @@ describe("formatDate: 날짜 포맷팅 함수", () => {
      */
     it("0 또는 음수 타임스탬프도 정상적으로 처리해야 합니다.", () => {
       expect(formatDate(0)).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
-      expect(formatDate(-1000000000)).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
+      expect(formatDate(-1000000000)).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
+      );
     });
 
     /**

@@ -3,7 +3,7 @@
   <div class="login-container">
     <!-- login form -->
     <div class="login-box">
-      <h2>{{ t('message.login.form-title') }}</h2>
+      <h2>{{ t("message.login.form-title") }}</h2>
       <a-form layout="vertical" @submit.prevent="onSubmit">
         <a-form-item>
           <a-input
@@ -33,7 +33,11 @@
             block
             size="large"
           >
-            {{ loading ? t('message.login.button-loading') : t('message.login.button-login') }}
+            {{
+              loading
+                ? t("message.login.button-loading")
+                : t("message.login.button-login")
+            }}
           </a-button>
         </a-form-item>
       </a-form>

@@ -1,9 +1,6 @@
 <template>
   <div>
-    <LoginForm
-      :loading="loading"
-      @login="onLogin"
-    />
+    <LoginForm :loading="loading" @login="onLogin" />
   </div>
 </template>
 

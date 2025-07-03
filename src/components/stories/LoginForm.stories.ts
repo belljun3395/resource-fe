@@ -37,11 +37,11 @@ const Template = (args: any) => ({
         const nameInput = this.$el.querySelector('input[type="text"]');
         if (emailInput) {
           emailInput.value = "admin@company.com";
-          emailInput.dispatchEvent(new Event('input'));
+          emailInput.dispatchEvent(new Event("input"));
         }
         if (nameInput) {
           nameInput.value = "관리자";
-          nameInput.dispatchEvent(new Event('input'));
+          nameInput.dispatchEvent(new Event("input"));
         }
       }, 100);
     }
@@ -65,7 +65,7 @@ Default.decorators = [
     setup() {
       return {};
     },
-    template: '<div><story /></div>',
+    template: "<div><story /></div>",
     i18n,
   }),
 ];
@@ -80,7 +80,7 @@ Loading.decorators = [
     setup() {
       return {};
     },
-    template: '<div><story /></div>',
+    template: "<div><story /></div>",
     i18n,
   }),
 ];
