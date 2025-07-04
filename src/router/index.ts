@@ -15,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/NotFoundPage.vue"),
   },
   {
+    path: "/servers/instances/create",
+    component: () => import("@/views/vm/InstanceCreateView.vue"),
+    meta: { auth: true },
+  },
+  {
     path: "/servers/instances/:instanceId",
     component: () => import("@/views/vm/InstanceDetailView.vue"),
     props: true,
