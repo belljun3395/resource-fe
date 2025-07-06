@@ -15,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/NotFoundPage.vue"),
   },
   {
+    path: "/servers/instances/create",
+    component: () => import("@/views/vm/InstanceCreateView.vue"),
+    meta: { auth: true },
+  },
+  {
     path: "/servers/instances/:instanceId",
     component: () => import("@/views/vm/InstanceDetailView.vue"),
     props: true,
@@ -27,7 +32,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const userStore = useUserStore();
 
   if (
