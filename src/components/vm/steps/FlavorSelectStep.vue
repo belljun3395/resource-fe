@@ -9,9 +9,7 @@
           :options="flavorOptions"
           @change="handleFlavorChange"
         >
-          <template
-            #option="{ label, description, vcpu, memory, rootDisk }"
-          >
+          <template #option="{ label, description, vcpu, memory, rootDisk }">
             <div class="flavor-option">
               <div class="flavor-name">{{ label }}</div>
               <div class="flavor-specs">
