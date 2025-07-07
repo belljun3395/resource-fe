@@ -39,7 +39,7 @@ router.beforeEach((to, _from, next) => {
     (to.path === "/" || to.path.toLocaleLowerCase() === "/login") &&
     userStore.isLogin()
   ) {
-    next("/main");
+    next("/servers/instances");
     return;
   }
 
