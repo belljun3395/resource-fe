@@ -13,8 +13,8 @@ test.describe('VM 관련 화면 스크린샷', () => {
     await page.fill('input[type="text"]', '테스트유저');
     await page.click('button[type="submit"]');
 
-    // 로그인 성공 후 메인 페이지로 리다이렉트 대기
-    await page.waitForURL('/main', { timeout: 10000 });
+    // 로그인 성공 후 VM 목록 페이지로 리다이렉트 대기
+    await page.waitForURL('/servers/instances', { timeout: 10000 });
   }
 
   // VM 상세 페이지 로딩 완료를 기다리는 헬퍼 함수
