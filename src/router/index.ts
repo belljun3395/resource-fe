@@ -11,14 +11,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/LoginPage.vue"),
   },
   {
-    path: "/:pathMatch(.*)*",
-    component: () => import("@/views/NotFoundPage.vue"),
+    path: "/servers/instances",
+    component: () => import("@/views/vm/InstanceListView.vue"),
+    meta: { auth: true },
   },
   {
     path: "/servers/instances/:instanceId",
     component: () => import("@/views/vm/InstanceDetailView.vue"),
     props: true,
     meta: { auth: true },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/views/NotFoundPage.vue"),
   },
 ];
 
@@ -27,7 +32,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const userStore = useUserStore();
 
   if (
