@@ -1,3 +1,5 @@
+import { getPowerStatusCode } from "@/types/vm.converter";
+
 /**
  * VM 인스턴스의 전원 상태를 나타내는 열거형
  * 서버에서 전달되는 숫자 코드와 매핑됨
@@ -14,7 +16,7 @@ export enum PowerStatus {
   /** 실행 중 */
   RUNNING = 4,
   /** 서스펜드 상태 (절전 모드) */
-  SUSPEN = 5,
+  SUSPENDED = 5,
 }
 
 /** PowerStatus 열거형의 키를 문자열로 표현하는 타입 (예: "RUNNING", "PAUSED") */
@@ -24,10 +26,39 @@ export type PowerStatusString = keyof typeof PowerStatus;
 export type PowerStatusCode = `${PowerStatus}`;
 
 /**
- * VM 인스턴스의 기본 데이터 구조를 정의하는 인터페이스
- * VmInstance 클래스의 생성자에서 사용됨
+ * VM 소스 정보를 나타내는 인터페이스
  */
-export interface VmInstanceData {
+export interface VmSource {
+  /** 소스 타입 */
+  type: string;
+  /** 소스 ID */
+  id: number;
+  /** 소스 이름 */
+  name: string;
+}
+
+/**
+ * VM 플레이버 정보를 나타내는 인터페이스
+ */
+export interface VmFlavor {
+  /** 플레이버 ID */
+  id: number;
+  /** 플레이버 이름 */
+  name: string;
+  /** 플레이버 설명 */
+  description: string;
+  /** 메모리 크기 */
+  memory: number;
+  /** 루트 디스크 크기 */
+  rootDisk: number;
+  /** vCPU 개수 */
+  vcpu: number;
+}
+
+/**
+ * VM 인스턴스 데이터의 공통 베이스 인터페이스
+ */
+export interface VmInstanceBaseData {
   /** 인스턴스 이름 */
   name: string;
   /** 인스턴스 고유 식별자 */
@@ -41,32 +72,29 @@ export interface VmInstanceData {
 }
 
 /**
- * PowerStatusString을 PowerStatusCode로 변환하는 유틸리티 함수
- * @param powerState - 변환할 전원 상태 문자열 (예: "RUNNING")
- * @returns 해당하는 전원 상태 코드 (예: "4")
+ * 단일 조회용 VM 인스턴스 데이터 구조
+ * 최소한의 정보만 포함
  */
-export function getPowerStatusCode(
-  powerState: PowerStatusString
-): PowerStatusCode {
-  return PowerStatus[powerState].toString() as PowerStatusCode;
-}
+export interface VmInstanceDetailData extends VmInstanceBaseData {}
 
 /**
- * PowerStatusCode를 PowerStatusString으로 변환하는 유틸리티 함수
- * @param code - 변환할 전원 상태 코드 (예: "4")
- * @returns 해당하는 전원 상태 문자열 (예: "RUNNING")
+ * 복수 조회용 VM 인스턴스 데이터 구조
+ * 전체 정보 포함
  */
-export function getPowerStatusFromCode(
-  code: PowerStatusCode
-): PowerStatusString {
-  return PowerStatus[Number(code)] as PowerStatusString;
+export interface VmInstanceListData extends VmInstanceBaseData {
+  /** 인스턴스 설명 */
+  description: string;
+  /** VM 소스 정보 */
+  source: VmSource;
+  /** VM 플레이버 정보 */
+  flavor: VmFlavor;
 }
 
 /**
  * VM 인스턴스를 표현하는 불변 클래스
  * 데이터 무결성을 보장하고 캡슐화를 통한 안전한 접근을 제공
  */
-export class VmInstance {
+export class VmInstance<T extends VmInstanceBaseData> {
   /** 인스턴스 이름 (읽기 전용) */
   public readonly name: string;
   /** 인스턴스 고유 식별자 (읽기 전용) */
@@ -82,7 +110,7 @@ export class VmInstance {
    * VmInstance 생성자
    * @param data - VM 인스턴스 데이터
    */
-  constructor(data: VmInstanceData) {
+  constructor(data: T) {
     this.name = data.name;
     this.id = data.id;
     this.powerState = data.powerState;
@@ -96,5 +124,34 @@ export class VmInstance {
    */
   get powerStateCode(): PowerStatusCode {
     return getPowerStatusCode(this.powerState);
+  }
+}
+
+/**
+ * 단일 조회용 VM 인스턴스 타입 별칭
+ */
+export type VmInstanceDetail = VmInstance<VmInstanceDetailData>;
+
+/**
+ * 복수 조회용 VM 인스턴스 클래스
+ * 전체 정보를 포함하는 불변 클래스
+ */
+export class VmInstanceList extends VmInstance<VmInstanceListData> {
+  /** 인스턴스 설명 (읽기 전용) */
+  public readonly description: string;
+  /** VM 소스 정보 (읽기 전용) */
+  public readonly source: VmSource;
+  /** VM 플레이버 정보 (읽기 전용) */
+  public readonly flavor: VmFlavor;
+
+  /**
+   * VmInstanceList 생성자
+   * @param data - VM 인스턴스 리스트 데이터
+   */
+  constructor(data: VmInstanceListData) {
+    super(data);
+    this.description = data.description;
+    this.source = { ...data.source };
+    this.flavor = { ...data.flavor };
   }
 }

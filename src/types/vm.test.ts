@@ -4,13 +4,17 @@
  */
 import { describe, it, expect } from "vitest";
 import {
-  PowerStatus,
   getPowerStatusCode,
   getPowerStatusFromCode,
+} from "@/types/vm.converter";
+import {
+  PowerStatus,
   VmInstance,
+  VmInstanceList,
   type PowerStatusString,
   type PowerStatusCode,
-  type VmInstanceData,
+  type VmInstanceDetailData,
+  type VmInstanceListData,
 } from "./vm";
 
 describe("PowerStatus: 전원 상태 열거형", () => {
@@ -20,7 +24,7 @@ describe("PowerStatus: 전원 상태 열거형", () => {
     expect(PowerStatus.CRASHED).toBe(2);
     expect(PowerStatus.NOSTATE).toBe(3);
     expect(PowerStatus.RUNNING).toBe(4);
-    expect(PowerStatus.SUSPEN).toBe(5);
+    expect(PowerStatus.SUSPENDED).toBe(5);
   });
 });
 
@@ -31,7 +35,7 @@ describe("getPowerStatusCode: 전원 상태 문자열 -> 코드 변환", () => {
     expect(getPowerStatusCode("CRASHED")).toBe("2");
     expect(getPowerStatusCode("NOSTATE")).toBe("3");
     expect(getPowerStatusCode("RUNNING")).toBe("4");
-    expect(getPowerStatusCode("SUSPEN")).toBe("5");
+    expect(getPowerStatusCode("SUSPENDED")).toBe("5");
   });
 });
 
@@ -42,7 +46,7 @@ describe("getPowerStatusFromCode: 전원 상태 코드 -> 문자열 변환", () 
     expect(getPowerStatusFromCode("2")).toBe("CRASHED");
     expect(getPowerStatusFromCode("3")).toBe("NOSTATE");
     expect(getPowerStatusFromCode("4")).toBe("RUNNING");
-    expect(getPowerStatusFromCode("5")).toBe("SUSPEN");
+    expect(getPowerStatusFromCode("5")).toBe("SUSPENDED");
   });
 });
 
@@ -54,7 +58,7 @@ describe("PowerStatus 변환 함수의 양방향 일관성", () => {
       "CRASHED",
       "NOSTATE",
       "RUNNING",
-      "SUSPEN",
+      "SUSPENDED",
     ];
     powerStates.forEach((powerState) => {
       const code = getPowerStatusCode(powerState);
@@ -74,7 +78,7 @@ describe("PowerStatus 변환 함수의 양방향 일관성", () => {
 });
 
 describe("VmInstance: VM 인스턴스 클래스", () => {
-  const mockVmData: VmInstanceData = {
+  const mockVmData: VmInstanceDetailData = {
     name: "test-vm",
     id: "vm-123",
     powerState: "RUNNING",
@@ -122,7 +126,7 @@ describe("VmInstance: VM 인스턴스 클래스", () => {
 
   describe("엣지 케이스 (Edge Cases)", () => {
     it("속성 값으로 빈 문자열이 주어져도 정상적으로 처리해야 합니다.", () => {
-      const emptyData: VmInstanceData = {
+      const emptyData: VmInstanceDetailData = {
         name: "",
         id: "",
         powerState: "NOSTATE",
@@ -136,7 +140,7 @@ describe("VmInstance: VM 인스턴스 클래스", () => {
     });
 
     it("속성 값에 특수문자가 포함되어도 정상적으로 처리해야 합니다.", () => {
-      const specialData: VmInstanceData = {
+      const specialData: VmInstanceDetailData = {
         name: "vm-!@#$",
         id: "id-!@#$",
         powerState: "RUNNING",
@@ -145,6 +149,60 @@ describe("VmInstance: VM 인스턴스 클래스", () => {
       };
       const vm = new VmInstance(specialData);
       expect(vm.name).toBe("vm-!@#$");
+    });
+  });
+});
+
+describe("VmInstanceList: VM 인스턴스 리스트 클래스", () => {
+  const mockVmListData: VmInstanceListData = {
+    name: "test-vm-list",
+    id: "vm-list-456",
+    powerState: "SHUTDOWN",
+    alias: "list-alias",
+    host: "list-host.com",
+    description: "Test description",
+    source: { type: "image", id: 1, name: "ubuntu" },
+    flavor: {
+      id: 1,
+      name: "small",
+      description: "Small flavor",
+      memory: 1024,
+      rootDisk: 20,
+      vcpu: 1,
+    },
+  };
+
+  describe("생성자 (Constructor)", () => {
+    it("주어진 데이터로 VmInstanceList를 생성하고 속성들이 올바르게 설정되어야 합니다.", () => {
+      const vmList = new VmInstanceList(mockVmListData);
+      expect(vmList.name).toBe("test-vm-list");
+      expect(vmList.id).toBe("vm-list-456");
+      expect(vmList.powerState).toBe("SHUTDOWN");
+      expect(vmList.alias).toBe("list-alias");
+      expect(vmList.host).toBe("list-host.com");
+      expect(vmList.description).toBe("Test description");
+      expect(vmList.source.name).toBe("ubuntu");
+      expect(vmList.flavor.name).toBe("small");
+    });
+  });
+
+  describe("Getter: powerStateCode", () => {
+    it("powerStateCode getter가 올바른 전원 상태 코드를 반환해야 합니다.", () => {
+      const vmList = new VmInstanceList(mockVmListData);
+      expect(vmList.powerStateCode).toBe("1");
+    });
+  });
+
+  describe("데이터 불변성 (Immutability)", () => {
+    it("인스턴스 생성 후 원본 데이터 객체를 변경해도 인스턴스의 속성은 영향을 받지 않아야 합니다.", () => {
+      const originalData = JSON.parse(JSON.stringify(mockVmListData));
+      const vmList = new VmInstanceList(originalData);
+
+      originalData.name = "modified-name";
+      originalData.source.name = "fedora";
+
+      expect(vmList.name).toBe("test-vm-list");
+      expect(vmList.source.name).toBe("ubuntu");
     });
   });
 });
