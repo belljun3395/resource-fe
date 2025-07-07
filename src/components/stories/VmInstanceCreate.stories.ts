@@ -1,5 +1,11 @@
 // @ts-nocheck
 import VmInstanceCreate from "@/components/vm/VmInstanceCreate.vue";
+import BasicInfoStep from "@/components/vm/steps/BasicInfoStep.vue";
+import ImageSelectStep from "@/components/vm/steps/ImageSelectStep.vue";
+import FlavorSelectStep from "@/components/vm/steps/FlavorSelectStep.vue";
+import ReviewStep from "@/components/vm/steps/ReviewStep.vue";
+import { MOCK_IMAGES } from "@/types/const/image";
+import { MOCK_FLAVORS } from "@/types/const/flavor";
 
 export default {
   title: "Components/VM/VmInstanceCreate",
@@ -14,69 +20,102 @@ export default {
   },
 };
 
-// 각 단계를 보여주는 독립적인 컴포넌트 생성
-const StoryWrapper = (stepIndex, initialFormData = {}) => ({
-  components: { VmInstanceCreate },
+// 각 단계 컴포넌트 개별 스토리
+const StepWrapper = (component, props = {}) => ({
+  components: { [component.name]: component },
   data() {
     return {
       formData: {
-        name: "",
-        description: "",
-        imageId: null,
-        flavorId: null,
-        ...initialFormData,
+        name: "Example VM",
+        description: "테스트용 VM 인스턴스",
+        imageId: 1,
+        flavorId: 2,
+        ...props.formData,
       },
-      currentStep: stepIndex,
       loading: false,
+      ...props,
     };
   },
   template: `
     <div style="min-height: 100vh; background-color: #f5f5f5; padding: 20px;">
-      <div style="max-width: 1200px; margin: 0 auto;">
-        <VmInstanceCreate 
-          :initial-step="currentStep"
-          :initial-form-data="formData"
-          :force-step="currentStep"
+      <div style="max-width: 800px; margin: 0 auto; background: white; padding: 24px; border-radius: 8px;">
+        <component 
+          :is="$options.components[Object.keys($options.components)[0]]"
+          v-model:form-data="formData"
+          :loading="loading"
+          v-bind="$props"
+          @next="() => {}"
+          @previous="() => {}"
+          @create="() => {}"
         />
       </div>
     </div>
   `,
 });
 
-// 1단계 - 기본 정보 입력
+// 완전한 마법사 컴포넌트 - 각 단계별 시나리오
+const WizardStepWrapper = (initialStep, initialFormData = {}) => ({
+  components: { VmInstanceCreate },
+  data() {
+    return {
+      targetStep: initialStep,
+      targetFormData: {
+        name: "",
+        description: "",
+        imageId: null,
+        flavorId: null,
+        ...initialFormData,
+      },
+    };
+  },
+  template: `
+    <div style="min-height: 100vh; background-color: #f5f5f5;">
+      <VmInstanceCreate ref="vmComponent" />
+    </div>
+  `,
+  mounted() {
+    // 마운트 후 강제로 단계와 폼 데이터 설정
+    this.$nextTick(() => {
+      if (this.$refs.vmComponent) {
+        this.$refs.vmComponent.currentStep = this.targetStep;
+        Object.assign(this.$refs.vmComponent.formData, this.targetFormData);
+      }
+    });
+  },
+});
+
+// 마법사 1단계 - 기본 정보 입력
 export const Step1_BasicInfo = {
-  render: () => StoryWrapper(0, {}),
+  render: () => WizardStepWrapper(0, {}),
   parameters: {
     docs: {
       description: {
-        story:
-          "VM 인스턴스 생성의 첫 번째 단계입니다. VM 이름과 설명을 입력합니다.",
+        story: "완전한 마법사 화면에서 1단계 기본정보 입력 상태를 보여줍니다.",
       },
     },
   },
 };
 
-// 2단계 - 이미지 선택
+// 마법사 2단계 - 이미지 선택
 export const Step2_ImageSelection = {
   render: () =>
-    StoryWrapper(1, {
+    WizardStepWrapper(1, {
       name: "Example VM",
       description: "테스트용 VM",
     }),
   parameters: {
     docs: {
       description: {
-        story:
-          "이미지 선택 단계입니다. 사용 가능한 이미지 목록에서 VM에 사용할 이미지를 선택합니다.",
+        story: "완전한 마법사 화면에서 2단계 이미지 선택 상태를 보여줍니다.",
       },
     },
   },
 };
 
-// 3단계 - 플레이버 선택
+// 마법사 3단계 - 플레이버 선택
 export const Step3_FlavorSelection = {
   render: () =>
-    StoryWrapper(2, {
+    WizardStepWrapper(2, {
       name: "Example VM",
       description: "테스트용 VM",
       imageId: 1,
@@ -84,17 +123,16 @@ export const Step3_FlavorSelection = {
   parameters: {
     docs: {
       description: {
-        story:
-          "플레이버 선택 단계입니다. VM의 CPU, 메모리, 디스크 사양을 결정합니다.",
+        story: "완전한 마법사 화면에서 3단계 플레이버 선택 상태를 보여줍니다.",
       },
     },
   },
 };
 
-// 4단계 - 검토 및 생성
+// 마법사 4단계 - 검토 및 생성
 export const Step4_Review = {
   render: () =>
-    StoryWrapper(3, {
+    WizardStepWrapper(3, {
       name: "Production VM",
       description: "프로덕션 환경용 VM 인스턴스",
       imageId: 1,
@@ -103,8 +141,7 @@ export const Step4_Review = {
   parameters: {
     docs: {
       description: {
-        story:
-          "최종 검토 단계입니다. 모든 입력 정보를 확인하고 VM 인스턴스를 생성합니다.",
+        story: "완전한 마법사 화면에서 4단계 검토 및 생성 상태를 보여줍니다.",
       },
     },
   },

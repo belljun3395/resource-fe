@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
@@ -40,19 +40,6 @@ import BasicInfoStep from "@/components/vm/steps/BasicInfoStep.vue";
 import ImageSelectStep from "@/components/vm/steps/ImageSelectStep.vue";
 import FlavorSelectStep from "@/components/vm/steps/FlavorSelectStep.vue";
 import ReviewStep from "@/components/vm/steps/ReviewStep.vue";
-
-// Props for Storybook
-interface Props {
-  initialStep?: number;
-  initialFormData?: Partial<VmCreateFormData>;
-  forceStep?: number;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  initialStep: 0,
-  initialFormData: () => ({}),
-  forceStep: undefined,
-});
 
 // 단계별 설정 (확장 가능한 구조)
 const stepConfig = [
@@ -121,23 +108,11 @@ const formData = ref<VmCreateFormData>({
   description: "",
   imageId: null,
   flavorId: null,
-  ...props.initialFormData,
 });
 
 // 현재 단계
-const currentStep = ref(props.initialStep);
+const currentStep = ref(0);
 const loading = ref(false);
-
-// Storybook에서 강제로 단계 설정
-watch(
-  () => props.forceStep,
-  (newStep) => {
-    if (newStep !== undefined) {
-      currentStep.value = newStep;
-    }
-  },
-  { immediate: true }
-);
 
 // 이미지 및 플레이버 데이터
 const images = ref<ImageSpec[]>([]);
@@ -194,11 +169,6 @@ const validateStep = (targetStep: number): boolean => {
 
 // 단계 클릭 시 이동 처리
 const handleStepChange = (step: number) => {
-  // Storybook에서 강제 단계가 설정된 경우 이동 막기
-  if (props.forceStep !== undefined) {
-    return;
-  }
-
   // 현재 단계보다 뒤로는 항상 이동 가능
   if (step < currentStep.value) {
     currentStep.value = step;
@@ -213,11 +183,6 @@ const handleStepChange = (step: number) => {
 
 // 다음 단계로 이동
 const handleNext = () => {
-  // Storybook에서 강제 단계가 설정된 경우 이동 막기
-  if (props.forceStep !== undefined) {
-    return;
-  }
-
   const nextStep = currentStep.value + 1;
   if (validateStep(nextStep)) {
     currentStep.value = nextStep;
@@ -225,11 +190,6 @@ const handleNext = () => {
 };
 
 const handlePrevious = () => {
-  // Storybook에서 강제 단계가 설정된 경우 이동 막기
-  if (props.forceStep !== undefined) {
-    return;
-  }
-
   if (currentStep.value > 0) {
     currentStep.value--;
   }
@@ -261,6 +221,12 @@ const handleCreateInstance = async () => {
     loading.value = false;
   }
 };
+
+// 스토리북에서 접근할 수 있도록 expose
+defineExpose({
+  currentStep,
+  formData,
+});
 </script>
 
 <style scoped>
