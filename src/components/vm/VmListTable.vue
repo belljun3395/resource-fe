@@ -8,7 +8,7 @@
       :row-key="(record: VmInstanceList) => record.id"
       :scroll="{ x: 1200 }"
       size="middle"
-      @row-click="onRowClick"
+      :custom-row="customRow"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'powerState'">
@@ -120,6 +120,13 @@ const columns = computed<TableColumnType[]>(() => [
    ========================================================================== */
 const onRowClick = (record: VmInstanceList) => {
   router.push(`/servers/instances/${record.id}`);
+};
+
+const customRow = (record: VmInstanceList) => {
+  return {
+    onClick: () => onRowClick(record),
+    style: { cursor: "pointer" },
+  };
 };
 </script>
 
