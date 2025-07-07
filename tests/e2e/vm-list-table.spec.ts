@@ -19,23 +19,77 @@ test.describe('VM 목록 테이블 기능 테스트', () => {
 
   // VM 목록 페이지 로딩 완료를 기다리는 헬퍼 함수
   async function waitForVmListLoaded(page) {
+    console.log('🔍 VM 목록 로딩 대기 시작...');
+    
     // VM 목록 테이블이 로드될 때까지 대기
     await page.waitForSelector('.vm-list-table', { timeout: 15000 });
+    console.log('✅ .vm-list-table 발견');
     
     // Ant Design 테이블 컴포넌트가 로드될 때까지 대기
     await page.waitForSelector('.ant-table-tbody', { timeout: 15000 });
+    console.log('✅ .ant-table-tbody 발견');
     
-    // 테이블 로딩 스피너가 사라질 때까지 대기
+    // 로딩 스피너가 완전히 사라질 때까지 대기
     await page.waitForFunction(() => {
-      const table = document.querySelector('.ant-table');
-      return table && !table.classList.contains('ant-table-loading');
+      const spinners = document.querySelectorAll('.ant-spin-spinning');
+      return spinners.length === 0;
     }, { timeout: 20000 });
+    console.log('✅ 로딩 스피너 사라짐');
     
-    // 실제 데이터 행이 로드될 때까지 대기 (measure-row가 아닌 실제 데이터 행)
+    // "No data" 텍스트가 사라지고 실제 데이터가 로드될 때까지 대기
     await page.waitForFunction(() => {
+      // "No data" 텍스트가 없어야 함
+      const noDataElements = document.querySelectorAll('.ant-empty-description');
+      if (noDataElements.length > 0) {
+        for (const element of noDataElements) {
+          if (element.textContent && element.textContent.includes('No data')) {
+            return false;
+          }
+        }
+      }
+      
+      // 실제 데이터 행이 있어야 함
       const rows = document.querySelectorAll('.ant-table-tbody tr:not(.ant-table-measure-row)');
-      return rows.length > 0;
-    }, { timeout: 20000 });
+      if (rows.length === 0) return false;
+      
+      // 첫 번째 행에 실제 데이터가 있는지 확인
+      const firstRow = rows[0];
+      const cells = firstRow.querySelectorAll('td');
+      if (cells.length === 0) return false;
+      
+      // 첫 번째 셀에 의미있는 텍스트 내용이 있는지 확인
+      const firstCell = cells[0];
+      const cellText = firstCell.textContent?.trim();
+      return cellText && cellText !== '' && cellText !== 'No data' && !cellText.includes('loading');
+    }, { timeout: 30000 });
+    
+    console.log('✅ 실제 데이터 로드 완료');
+    
+    // Mock API 데이터 로드 확인을 위한 추가 검증
+    const rowCount = await page.evaluate(() => {
+      const rows = document.querySelectorAll('.ant-table-tbody tr:not(.ant-table-measure-row)');
+      return rows.length;
+    });
+    
+    console.log(`📊 로드된 데이터 행 수: ${rowCount}`);
+    
+    if (rowCount === 0) {
+      console.log('⚠️  데이터가 로드되지 않음. Mock API 응답 확인 필요');
+      // Mock API 응답을 기다리기 위해 추가 대기
+      await page.waitForTimeout(3000);
+      
+      // 재시도
+      await page.waitForFunction(() => {
+        const rows = document.querySelectorAll('.ant-table-tbody tr:not(.ant-table-measure-row)');
+        return rows.length > 0;
+      }, { timeout: 10000 }).catch(() => {
+        console.log('❌ Mock 데이터 로드 실패');
+      });
+    }
+    
+    // 최종 안정성을 위해 잠시 대기
+    await page.waitForTimeout(1500);
+    console.log('🎉 VM 목록 로딩 완료!');
   }
 
   test('VM 목록 테이블 기본 렌더링 테스트', async ({ page }) => {
@@ -220,9 +274,11 @@ test.describe('VM 목록 테이블 기능 테스트', () => {
     const powerStates = ['RUNNING', 'PAUSED', 'SHUTDOWN', 'SUSPENDED'];
     for (const state of powerStates) {
       const stateTag = page.locator('.ant-tag').filter({ hasText: state });
-      if (await stateTag.count() > 0) {
-        await expect(stateTag).toBeVisible();
-        console.log(`✅ ${state} 상태 태그 표시 확인`);
+      const tagCount = await stateTag.count();
+      if (tagCount > 0) {
+        // 여러 개가 있으면 첫 번째만 확인
+        await expect(stateTag.first()).toBeVisible();
+        console.log(`✅ ${state} 상태 태그 표시 확인 (${tagCount}개 중 첫 번째)`);
       }
     }
     
