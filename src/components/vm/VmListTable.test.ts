@@ -316,7 +316,7 @@ describe("VmListTable.vue: VM 인스턴스 목록 테이블 컴포넌트", () =>
   });
 
   describe("행 클릭 이벤트", () => {
-    it("테이블 행 클릭 시 올바른 경로로 네비게이션되어야 합니다.", async () => {
+    it("customRow 함수가 올바른 클릭 핸들러를 반환해야 합니다.", () => {
       const wrapper = mount(VmListTable, {
         props: {
           dataSource: mockVmInstanceList,
@@ -327,15 +327,23 @@ describe("VmListTable.vue: VM 인스턴스 목록 테이블 컴포넌트", () =>
         },
       });
 
-      // 테이블의 행 클릭 이벤트를 시뮬레이션합니다.
-      const table = wrapper.findComponent({ name: "ATable" });
-      await table.vm.$emit("row-click", mockVmInstanceList[0]);
-
+      // customRow 함수를 직접 테스트합니다.
+      const vm = wrapper.vm as any;
+      const customRowResult = vm.customRow(mockVmInstanceList[0]);
+      
+      // 반환된 객체가 올바른 구조를 가지는지 확인합니다.
+      expect(customRowResult).toHaveProperty('onClick');
+      expect(customRowResult).toHaveProperty('style');
+      expect(customRowResult.style.cursor).toBe('pointer');
+      
+      // 클릭 핸들러를 실행합니다.
+      customRowResult.onClick();
+      
       // 올바른 경로로 네비게이션되었는지 확인합니다.
       expect(mockPush).toHaveBeenCalledWith("/servers/instances/vm-123");
     });
 
-    it("다른 행 클릭 시 해당 ID로 네비게이션되어야 합니다.", async () => {
+    it("다른 행의 customRow 클릭 시 해당 ID로 네비게이션되어야 합니다.", () => {
       const wrapper = mount(VmListTable, {
         props: {
           dataSource: mockVmInstanceList,
@@ -346,10 +354,13 @@ describe("VmListTable.vue: VM 인스턴스 목록 테이블 컴포넌트", () =>
         },
       });
 
-      // 두 번째 행 클릭 이벤트를 시뮬레이션합니다.
-      const table = wrapper.findComponent({ name: "ATable" });
-      await table.vm.$emit("row-click", mockVmInstanceList[1]);
-
+      // 두 번째 행의 customRow 함수를 테스트합니다.
+      const vm = wrapper.vm as any;
+      const customRowResult = vm.customRow(mockVmInstanceList[1]);
+      
+      // 클릭 핸들러를 실행합니다.
+      customRowResult.onClick();
+      
       // 올바른 경로로 네비게이션되었는지 확인합니다.
       expect(mockPush).toHaveBeenCalledWith("/servers/instances/vm-456");
     });
