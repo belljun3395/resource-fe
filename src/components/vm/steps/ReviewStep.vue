@@ -78,6 +78,11 @@ const selectedImage = computed(() =>
 const selectedFlavor = computed(() =>
   props.flavors.find((flavor) => flavor.id === props.formData.flavorId)
 );
+
+defineExpose({
+  selectedImage,
+  selectedFlavor,
+});
 </script>
 
 <style scoped>

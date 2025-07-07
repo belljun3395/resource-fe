@@ -110,6 +110,10 @@ const handleFlavorChange = (value: number) => {
 const handleNext = () => {
   emit("next");
 };
+
+defineExpose({
+  flavorOptions,
+});
 </script>
 
 <style scoped>
