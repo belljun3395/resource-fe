@@ -2,7 +2,9 @@ import type { VmInstanceApiResponse } from "@/api/vm/dto";
 import type { PowerStatusString } from "@/types/vm";
 
 // Mock 데이터 생성 함수
-const createMockVmInstance = (instanceId: string | number): VmInstanceApiResponse => {
+const createMockVmInstance = (
+  instanceId: string | number
+): VmInstanceApiResponse => {
   const mockInstances: Record<string, VmInstanceApiResponse> = {
     "1": {
       id: 1,
@@ -14,7 +16,7 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
       source: {
         type: "image",
         id: 101,
-        name: "ubuntu-22.04-lts"
+        name: "ubuntu-22.04-lts",
       },
       flavor: {
         id: 201,
@@ -22,8 +24,8 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
         description: "4 vCPU, 8GB RAM, 80GB Disk",
         memory: 8192,
         rootDisk: 80,
-        vcpu: 4
-      }
+        vcpu: 4,
+      },
     },
     "2": {
       id: 2,
@@ -35,7 +37,7 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
       source: {
         type: "image",
         id: 102,
-        name: "centos-8-stream"
+        name: "centos-8-stream",
       },
       flavor: {
         id: 202,
@@ -43,8 +45,8 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
         description: "2 vCPU, 4GB RAM, 40GB Disk",
         memory: 4096,
         rootDisk: 40,
-        vcpu: 2
-      }
+        vcpu: 2,
+      },
     },
     "3": {
       id: 3,
@@ -56,7 +58,7 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
       source: {
         type: "image",
         id: 103,
-        name: "postgresql-14"
+        name: "postgresql-14",
       },
       flavor: {
         id: 203,
@@ -64,39 +66,45 @@ const createMockVmInstance = (instanceId: string | number): VmInstanceApiRespons
         description: "8 vCPU, 16GB RAM, 200GB Disk",
         memory: 16384,
         rootDisk: 200,
-        vcpu: 8
-      }
-    }
+        vcpu: 8,
+      },
+    },
   };
 
-  return mockInstances[instanceId.toString()] || {
-    id: Number(instanceId),
-    name: `vm-instance-${instanceId}`,
-    description: `Mock VM instance ${instanceId}`,
-    alias: `vm-${instanceId}`,
-    powerStatus: "RUNNING" as PowerStatusString,
-    host: `host-${instanceId}.example.com`,
-    source: {
-      type: "image",
-      id: 100,
-      name: "default-image"
-    },
-    flavor: {
-      id: 200,
-      name: "standard-2",
-      description: "2 vCPU, 4GB RAM, 40GB Disk",
-      memory: 4096,
-      rootDisk: 40,
-      vcpu: 2
+  return (
+    mockInstances[instanceId.toString()] || {
+      id: Number(instanceId),
+      name: `vm-instance-${instanceId}`,
+      description: `Mock VM instance ${instanceId}`,
+      alias: `vm-${instanceId}`,
+      powerStatus: "RUNNING" as PowerStatusString,
+      host: `host-${instanceId}.example.com`,
+      source: {
+        type: "image",
+        id: 100,
+        name: "default-image",
+      },
+      flavor: {
+        id: 200,
+        name: "standard-2",
+        description: "2 vCPU, 4GB RAM, 40GB Disk",
+        memory: 4096,
+        rootDisk: 40,
+        vcpu: 2,
+      },
     }
-  };
+  );
 };
 
 // Mock API 응답 시뮬레이션
-const mockGetInstance = async (instanceId: string | number): Promise<VmInstanceApiResponse> => {
+const mockGetInstance = async (
+  instanceId: string | number
+): Promise<VmInstanceApiResponse> => {
   // 실제 API 호출과 유사한 지연 시간 시뮬레이션
-  await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-  
+  await new Promise((resolve) =>
+    setTimeout(resolve, 500 + Math.random() * 1000)
+  );
+
   console.log(`🔧 [Mock] Fetching VM instance: ${instanceId}`);
   return createMockVmInstance(instanceId);
 };
