@@ -47,11 +47,6 @@ export interface VmInstanceListApiResponse extends VmInstanceBaseApiResponse {
 }
 
 /**
- * @deprecated VmInstanceApiResponse 대신 VmInstanceDetailApiResponse 또는 VmInstanceListApiResponse 사용
- */
-export interface VmInstanceApiResponse extends VmInstanceListApiResponse {}
-
-/**
  * VM 목록 API 응답 인터페이스 (서버 응답)
  */
 export interface VmListApiResponse {
@@ -103,18 +98,6 @@ export interface VmInstanceCreateRequest {
   description?: string;
   imageId: number;
   flavorId: number;
-}
-
-export interface VmInstanceApiResponse {
-  id: number;
-  name: string;
-  description: string;
-  alias: string;
-  powerStatus: PowerStatusString;
-  host: string;
-  source: VmSource;
-  flavor: VmFlavor;
-  createdAt: string;
 }
 
 export interface PowerStatusUpdateResponse {

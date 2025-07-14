@@ -139,23 +139,6 @@ export interface VmInstanceListData extends VmInstanceBaseData {
   flavor: VmFlavor;
 }
 
-export function getPowerStatusCode(
-  powerState: PowerStatusString
-): PowerStatusCode {
-  return PowerStatus[powerState].toString() as PowerStatusCode;
-}
-
-/**
- * PowerStatusCode를 PowerStatusString으로 변환하는 유틸리티 함수
- * @param code - 변환할 전원 상태 코드 (예: "4")
- * @returns 해당하는 전원 상태 문자열 (예: "RUNNING")
- */
-export function getPowerStatusFromCode(
-  code: PowerStatusCode
-): PowerStatusString {
-  return PowerStatus[Number(code)] as PowerStatusString;
-}
-
 /**
  * VM 인스턴스를 표현하는 불변 클래스
  * 데이터 무결성을 보장하고 캡슐화를 통한 안전한 접근을 제공
@@ -189,7 +172,7 @@ export class VmInstance<T extends VmInstanceBaseData> {
    * @returns PowerStatusCode 타입의 전원 상태 코드 (예: "4")
    */
   get powerStateCode(): PowerStatusCode {
-    return getPowerStatusCode(this.powerState);
+    return PowerStatus[this.powerState].toString() as PowerStatusCode;
   }
 }
 

@@ -3,6 +3,9 @@ import type {
   VmInstanceListApiResponse,
   VmListApiResponse,
   VmListRequest,
+  VmInstanceCreateRequest,
+  PowerStatusUpdateResponse,
+  VmDeleteApiResponse,
 } from "@/api/vm/dto";
 import type { PowerStatusString } from "@/types/vm";
 
@@ -154,6 +157,82 @@ const mockGetInstanceList = async (
   };
 };
 
+const mockCreateInstance = async (
+  params: VmInstanceCreateRequest
+): Promise<VmInstanceListApiResponse> => {
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1000 + Math.random() * 2000)
+  );
+
+  console.log(`🔧 [Mock] Creating VM instance:`, params);
+
+  const newId = Math.floor(Math.random() * 10000) + 1000;
+  return {
+    id: newId,
+    name: params.name,
+    description: params.description || "",
+    alias: `vm-${newId}`,
+    powerStatus: "RUNNING" as PowerStatusString,
+    host: `host-${Math.floor(Math.random() * 100)}.example.com`,
+    source: {
+      type: "IMAGE",
+      id: params.imageId,
+      name: `image_${params.imageId}`,
+    },
+    flavor: {
+      id: params.flavorId,
+      name: `flavor_${params.flavorId}`,
+      description: `description_${params.flavorId}`,
+      memory: 4096,
+      rootDisk: 40,
+      vcpu: 2,
+    },
+  };
+};
+
+const mockDeleteInstance = async (
+  instanceId: string | number
+): Promise<VmDeleteApiResponse> => {
+  await new Promise((resolve) =>
+    setTimeout(resolve, 800 + Math.random() * 1200)
+  );
+
+  console.log(`🔧 [Mock] Deleting VM instance: ${instanceId}`);
+
+  return {
+    instanceId: Number(instanceId),
+    isAccepted: true,
+    isDeleted: true,
+  };
+};
+
+const mockUpdatePowerStatus = async (
+  instanceId: string | number,
+  actionCode: string
+): Promise<PowerStatusUpdateResponse> => {
+  await new Promise((resolve) =>
+    setTimeout(resolve, 500 + Math.random() * 1000)
+  );
+
+  console.log(
+    `🔧 [Mock] Updating power status for instance ${instanceId} with action ${actionCode}`
+  );
+
+  const powerStatusMap: Record<string, PowerStatusString> = {
+    "0": "RUNNING",
+    "1": "SHUTDOWN",
+    "2": "RUNNING",
+    "3": "PAUSED",
+  };
+
+  return {
+    success: true,
+    message: "Power status updated successfully",
+    instanceId,
+    newPowerStatus: powerStatusMap[actionCode] || "RUNNING",
+  };
+};
+
 export const vmApiMock = {
   async getInstance(
     instanceId: string | number
@@ -162,6 +241,26 @@ export const vmApiMock = {
   },
 
   async getInstanceList(params: VmListRequest): Promise<VmListApiResponse> {
+    console.log("🔧 [Mock] Fetching VM instance list:", params);
     return mockGetInstanceList(params);
+  },
+
+  async createInstance(
+    params: VmInstanceCreateRequest
+  ): Promise<VmInstanceListApiResponse> {
+    return mockCreateInstance(params);
+  },
+
+  async deleteInstance(
+    instanceId: string | number
+  ): Promise<VmDeleteApiResponse> {
+    return mockDeleteInstance(instanceId);
+  },
+
+  async updatePowerStatus(
+    instanceId: string | number,
+    actionCode: string
+  ): Promise<PowerStatusUpdateResponse> {
+    return mockUpdatePowerStatus(instanceId, actionCode);
   },
 };

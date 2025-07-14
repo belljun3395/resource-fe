@@ -4,6 +4,10 @@ import type {
   VmInstanceDetailApiResponse,
   VmListApiResponse,
   VmListRequest,
+  VmInstanceCreateRequest,
+  VmInstanceListApiResponse,
+  PowerStatusUpdateResponse,
+  VmDeleteApiResponse,
 } from "@/api/vm/dto";
 
 export const vmApi = {
@@ -27,5 +31,35 @@ export const vmApi = {
       }
     );
     return response.data;
+  },
+
+  async createInstance(
+    params: VmInstanceCreateRequest
+  ): Promise<VmInstanceListApiResponse> {
+    const response = await instance.post<
+      ApiResponse<VmInstanceListApiResponse>
+    >("/api/v1/servers/instances", params);
+    return response.data.data;
+  },
+
+  async deleteInstance(
+    instanceId: string | number
+  ): Promise<VmDeleteApiResponse> {
+    const response = await instance.delete<ApiResponse<VmDeleteApiResponse>>(
+      `/api/v1/servers/instances/${instanceId}`
+    );
+    return response.data.data;
+  },
+
+  async updatePowerStatus(
+    instanceId: string | number,
+    actionCode: string
+  ): Promise<PowerStatusUpdateResponse> {
+    const response = await instance.patch<
+      ApiResponse<PowerStatusUpdateResponse>
+    >(`/api/v1/servers/instances/${instanceId}/power-status`, {
+      actionCode,
+    });
+    return response.data.data;
   },
 };
