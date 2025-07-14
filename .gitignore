@@ -48,6 +48,3 @@ out/
 .history/
 *storybook.log
 storybook-static
-
-# pnpm
-pnpm-lock.yaml
