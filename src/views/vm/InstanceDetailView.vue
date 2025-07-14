@@ -13,6 +13,7 @@
         </a-breadcrumb>
       </template>
       <template #extra>
+        <a-button key="edit" type="primary">수정</a-button>
         <VmInstancePowerStatusDropdown
           :powerState="instanceDetails.powerState"
           :instanceId="props.instanceId"
@@ -37,6 +38,9 @@
    ========================================================================== */
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { VmInstance } from "@/types/vm";
+import { getVmApi } from "@/api/vm";
+import { VmInstanceDetails } from "@/components/vm";
 import { message } from "ant-design-vue";
 import {
   VmInstance,

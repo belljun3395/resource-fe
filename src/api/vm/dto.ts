@@ -15,6 +15,13 @@ export interface VmFlavor {
   vcpu: number;
 }
 
+export interface VmInstanceCreateRequest {
+  name: string;
+  description?: string;
+  imageId: number;
+  flavorId: number;
+}
+
 export interface VmInstanceApiResponse {
   id: number;
   name: string;
@@ -24,6 +31,7 @@ export interface VmInstanceApiResponse {
   host: string;
   source: VmSource;
   flavor: VmFlavor;
+  createdAt: string;
 }
 
 export interface PowerStatusUpdateResponse {

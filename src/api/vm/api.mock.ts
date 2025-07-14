@@ -1,4 +1,7 @@
-import type { VmInstanceApiResponse } from "@/api/vm/dto";
+import type {
+  VmInstanceApiResponse,
+  VmInstanceCreateRequest,
+} from "@/api/vm/dto";
 import type { PowerStatusString } from "@/types/vm";
 
 // Mock 데이터 생성 함수
@@ -26,6 +29,7 @@ const createMockVmInstance = (
         rootDisk: 80,
         vcpu: 4,
       },
+      createdAt: "2023-01-15T09:30:00.000Z",
     },
     "2": {
       id: 2,
@@ -47,6 +51,7 @@ const createMockVmInstance = (
         rootDisk: 40,
         vcpu: 2,
       },
+      createdAt: "2023-02-20T14:15:00.000Z",
     },
     "3": {
       id: 3,
@@ -68,6 +73,7 @@ const createMockVmInstance = (
         rootDisk: 200,
         vcpu: 8,
       },
+      createdAt: "2023-03-10T11:45:00.000Z",
     },
   };
 
@@ -92,6 +98,7 @@ const createMockVmInstance = (
         rootDisk: 40,
         vcpu: 2,
       },
+      createdAt: new Date().toISOString(),
     }
   );
 };
@@ -109,6 +116,19 @@ const mockGetInstance = async (
   return createMockVmInstance(instanceId);
 };
 
+// Mock 인스턴스 생성 API
+const mockCreateInstance = async (
+  data: VmInstanceCreateRequest
+): Promise<VmInstanceApiResponse> => {
+  // 실제 API 호출과 유사한 지연 시간 시뮬레이션
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1000 + Math.random() * 2000)
+  );
+
+  console.log(`🔧 [Mock] Creating VM instance:`, data);
+
+  const newInstanceId = Date.now();
+  return createMockVmInstance(newInstanceId);
 const mockUpdatePowerStatus = async (
   instanceId: string | number,
   powerStatusAction: string
@@ -146,6 +166,10 @@ export const vmApiMock = {
   ): Promise<VmInstanceApiResponse> {
     return mockGetInstance(instanceId);
   },
+  async createInstance(
+    data: VmInstanceCreateRequest
+  ): Promise<VmInstanceApiResponse> {
+    return mockCreateInstance(data);
   async updatePowerStatus(
     instanceId: string | number,
     powerStatusAction: string
