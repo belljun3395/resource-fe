@@ -115,7 +115,9 @@ const handleDelete = async () => {
   try {
     deleteLoading.value = true;
     const vmApi = await getVmApi();
-    const result: VmDeleteApiResponse = await vmApi.deleteInstance(props.instanceId);
+    const result: VmDeleteApiResponse = await vmApi.deleteInstance(
+      props.instanceId
+    );
 
     if (result.isDeleted && result.isAccepted) {
       message.success(

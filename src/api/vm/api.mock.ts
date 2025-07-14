@@ -131,7 +131,9 @@ export const vmApiMock = {
   ): Promise<VmInstanceApiResponse> {
     return mockGetInstance(instanceId);
   },
-  async deleteInstance(instanceId: string | number): Promise<VmDeleteApiResponse> {
+  async deleteInstance(
+    instanceId: string | number
+  ): Promise<VmDeleteApiResponse> {
     return mockDeleteInstance(instanceId);
   },
 };
