@@ -25,6 +25,17 @@ export const messages = {
           "copy-success": "{label}이(가) 클립보드에 복사되었습니다!",
           "copy-error": "복사 실패: {error}",
           loading: "로딩중...",
+          "delete-confirm-title": "VM 인스턴스 삭제",
+          "delete-confirm-message":
+            "정말로 '{name}' VM 인스턴스를 삭제하시겠습니까?",
+          "delete-warning": "삭제된 VM 인스턴스는 복구할 수 없습니다.",
+          "delete-success": "'{name}' VM 인스턴스가 성공적으로 삭제되었습니다.",
+          "delete-failed": "VM 인스턴스 삭제에 실패했습니다.",
+          "delete-error": "VM 인스턴스 삭제 중 오류가 발생했습니다.",
+          "delete-ok": "삭제",
+          "delete-cancel": "취소",
+          "button-edit": "수정",
+          "button-delete": "삭제",
         },
         create: {
           "page-title": "인스턴스 생성",
@@ -102,6 +113,18 @@ export const messages = {
           "copy-success": "{label} copied to clipboard!",
           "copy-error": "Copy failed: {error}",
           loading: "Loading...",
+          "delete-confirm-title": "Delete VM Instance",
+          "delete-confirm-message":
+            "Are you sure you want to delete '{name}' VM instance?",
+          "delete-warning": "Deleted VM instances cannot be recovered.",
+          "delete-success":
+            "'{name}' VM instance has been successfully deleted.",
+          "delete-failed": "Failed to delete VM instance.",
+          "delete-error": "An error occurred while deleting VM instance.",
+          "delete-ok": "Delete",
+          "delete-cancel": "Cancel",
+          "button-edit": "Edit",
+          "button-delete": "Delete",
         },
         create: {
           "page-title": "Create Instance",

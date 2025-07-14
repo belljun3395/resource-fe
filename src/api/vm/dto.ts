@@ -40,3 +40,9 @@ export interface PowerStatusUpdateResponse {
   instanceId: string | number;
   newPowerStatus?: PowerStatusString;
 }
+
+export interface VmDeleteApiResponse {
+  instanceId: number;
+  isAccepted: boolean;
+  isDeleted: boolean;
+}

@@ -116,6 +116,19 @@ const mockGetInstance = async (
   return createMockVmInstance(instanceId);
 };
 
+const mockDeleteInstance = async (
+  instanceId: string | number
+): Promise<VmDeleteApiResponse> => {
+  // 실제 API 호출과 유사한 지연 시간 시뮬레이션
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1000 + Math.random() * 1500)
+  );
+
+  console.log(`🔧 [Mock] Deleting VM instance: ${instanceId}`);
+  return {
+    instanceId: Number(instanceId),
+    isAccepted: true,
+    isDeleted: true,
 // Mock 인스턴스 생성 API
 const mockCreateInstance = async (
   data: VmInstanceCreateRequest
@@ -166,6 +179,10 @@ export const vmApiMock = {
   ): Promise<VmInstanceApiResponse> {
     return mockGetInstance(instanceId);
   },
+  async deleteInstance(
+    instanceId: string | number
+  ): Promise<VmDeleteApiResponse> {
+    return mockDeleteInstance(instanceId);
   async createInstance(
     data: VmInstanceCreateRequest
   ): Promise<VmInstanceApiResponse> {

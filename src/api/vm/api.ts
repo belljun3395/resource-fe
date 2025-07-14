@@ -16,6 +16,14 @@ export const vmApi = {
     );
     return response.data.data;
   },
+
+  async deleteInstance(
+    instanceId: string | number
+  ): Promise<VmDeleteApiResponse> {
+    const response = await instance.delete<ApiResponse<VmDeleteApiResponse>>(
+      `/api/v1/servers/instances`,
+      {
+        data: { instanceId: Number(instanceId) },
   async createInstance(
     data: VmInstanceCreateRequest
   ): Promise<VmInstanceApiResponse> {
