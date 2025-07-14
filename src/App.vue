@@ -22,20 +22,14 @@ const userStore = useUserStore();
 /* ==========================================================================
    Font Face Declarations
    ========================================================================== */
-@font-face {
-  font-family: "Pretendard";
-  src: url("@/assets/fonts/PretendardVariable.woff2") format("woff2-variations");
-  font-weight: 45 920;
-  font-style: normal;
-  font-display: swap;
-}
+/* Font file not available - using system fonts */
 
 /* ==========================================================================
    Global CSS Variables
    ========================================================================== */
 :root {
   /* Typography */
-  --font-family-primary: "Pretendard", -apple-system, BlinkMacSystemFont,
+  --font-family-primary: -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
   --font-weight-normal: 400;
   --font-size-base: 13px;

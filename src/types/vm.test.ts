@@ -11,21 +11,14 @@ import {
   PowerStatus,
   VmInstance,
   VmInstanceList,
-  type PowerStatusString,
-  type PowerStatusCode,
-  type VmInstanceDetailData,
-  type VmInstanceListData,
-  PowerStatus,
-  getPowerStatusCode,
-  getPowerStatusFromCode,
-  VmInstance,
   PowerAction,
   POWER_ACTION_CODE_MAP,
   getPowerActionCode,
   type PowerStatusString,
   type PowerStatusCode,
   type PowerActionString,
-  type VmInstanceData,
+  type VmInstanceDetailData,
+  type VmInstanceListData,
 } from "./vm";
 
 describe("PowerStatus: 전원 상태 열거형", () => {
@@ -279,7 +272,7 @@ describe("PowerAction과 PowerStatus의 독립성", () => {
       "CRASHED",
       "NOSTATE",
       "RUNNING",
-      "SUSPEN",
+      "SUSPENDED",
     ]);
 
     // 두 도메인은 서로 다름

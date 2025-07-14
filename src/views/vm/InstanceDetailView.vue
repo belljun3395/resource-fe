@@ -50,8 +50,10 @@ import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
 import {
   VmInstance,
+  VmInstanceDetail,
   getPowerActionCode,
   type PowerActionString,
+  type VmInstanceDetailData,
 } from "@/types/vm";
 import { getVmApi } from "@/api/vm";
 import type { VmDeleteApiResponse } from "@/api/vm/dto";
@@ -79,8 +81,8 @@ const router = useRouter();
    Reactive State
    ========================================================================== */
 /* VM 인스턴스 정보를 관리하는 반응형 객체 */
-const instanceDetails = ref<VmInstance>(
-  new VmInstance({
+const instanceDetails = ref<VmInstanceDetail>(
+  new VmInstance<VmInstanceDetailData>({
     name: "",
     id: props.instanceId,
     powerState: "NOSTATE",

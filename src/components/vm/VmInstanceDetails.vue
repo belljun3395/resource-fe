@@ -53,13 +53,13 @@
 import { CopyOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
-import type { VmInstance } from "@/types/vm";
+import type { VmInstanceDetail } from "@/types/vm";
 
 /* ==========================================================================
    Props
    ========================================================================== */
 interface VmInstanceDetailsProps {
-  instanceDetails: VmInstance;
+  instanceDetails: VmInstanceDetail;
 }
 defineProps<VmInstanceDetailsProps>();
 

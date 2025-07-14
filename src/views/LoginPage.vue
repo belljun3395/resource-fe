@@ -9,10 +9,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/userStore";
 import LoginForm from "@/components/LoginForm.vue";
-import { useI18n } from "vue-i18n";
+// import { useI18n } from "vue-i18n";
 import type { UserState } from "@/types/user";
 
-const { t } = useI18n();
+// const { t } = useI18n();
 const router = useRouter();
 const userStore = useUserStore();
 const loading = ref(false);
