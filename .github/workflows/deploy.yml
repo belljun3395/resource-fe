@@ -31,8 +31,12 @@ jobs:
     - name: Build for production with mock data
       run: pnpm run build:mock
       
+    - name: Copy index.html to 404.html for SPA routing
+      run: cp dist/index.html dist/404.html
+      
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
+        force_orphan: true
