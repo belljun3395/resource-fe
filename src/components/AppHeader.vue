@@ -2,9 +2,9 @@
   <a-layout-header class="header">
     <!-- logo -->
     <h1 class="logo">
-      <a class="router-link-active">
+      <router-link to="/" class="logo-link">
         <img :src="logoImg" alt="logo" />
-      </a>
+      </router-link>
     </h1>
     <!-- header menu -->
     <div class="header-menu-wrapper">
@@ -75,6 +75,18 @@ header {
   min-width: 232px;
   height: 49px;
   padding: 0 18px;
+}
+
+.header .logo .logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.header .logo .logo-link:hover {
+  opacity: 0.8;
 }
 
 .header .header-menu-wrapper .auth-menu .profile-setting {
