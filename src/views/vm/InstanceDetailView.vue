@@ -27,7 +27,6 @@
         :class="{ loading: isLoading }"
       />
     </div>
-
     <!-- 삭제 확인 모달 -->
     <DeleteConfirmModal
       v-model:open="showDeleteModal"
