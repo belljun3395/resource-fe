@@ -86,4 +86,52 @@ export interface VmListResponse {
   totalCount: number;
   /** VM 인스턴스 목록 */
   data: VmInstanceList[];
+=======
+import type { PowerStatusString } from "@/types/vm";
+
+export interface VmSource {
+  type: string;
+  id: number;
+  name: string;
+}
+
+export interface VmFlavor {
+  id: number;
+  name: string;
+  description: string;
+  memory: number;
+  rootDisk: number;
+  vcpu: number;
+}
+
+export interface VmInstanceCreateRequest {
+  name: string;
+  description?: string;
+  imageId: number;
+  flavorId: number;
+}
+
+export interface VmInstanceApiResponse {
+  id: number;
+  name: string;
+  description: string;
+  alias: string;
+  powerStatus: PowerStatusString;
+  host: string;
+  source: VmSource;
+  flavor: VmFlavor;
+  createdAt: string;
+}
+
+export interface PowerStatusUpdateResponse {
+  success: boolean;
+  message?: string;
+  instanceId: string | number;
+  newPowerStatus?: PowerStatusString;
+}
+
+export interface VmDeleteApiResponse {
+  instanceId: number;
+  isAccepted: boolean;
+  isDeleted: boolean;
 }

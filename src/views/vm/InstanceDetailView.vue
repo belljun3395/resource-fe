@@ -13,8 +13,12 @@
         </a-breadcrumb>
       </template>
       <template #extra>
-        <a-button key="edit" type="primary">수정</a-button>
-        <a-button key="delete">삭제</a-button>
+        <a-button key="edit" type="primary">{{
+          t("message.vm.instance.button-edit")
+        }}</a-button>
+        <a-button key="delete" danger @click="showDeleteModal = true">{{
+          t("message.vm.instance.button-delete")
+        }}</a-button>
       </template>
     </a-page-header>
     <div class="detail-content-wrapper">
@@ -23,6 +27,13 @@
         :class="{ loading: isLoading }"
       />
     </div>
+    <!-- 삭제 확인 모달 -->
+    <DeleteConfirmModal
+      v-model:open="showDeleteModal"
+      :instance-name="instanceDetails.name"
+      :loading="deleteLoading"
+      @confirm="handleDelete"
+    />
   </div>
 </template>
 
@@ -35,6 +46,23 @@ import { useI18n } from "vue-i18n";
 import { VmInstance } from "@/types/vm";
 import { getVmApi } from "@/api/vm";
 import { VmInstanceDetails } from "@/components/vm";
+import { useRouter } from "vue-router";
+import { message } from "ant-design-vue";
+import { VmInstance } from "@/types/vm";
+import { getVmApi } from "@/api/vm";
+import type { VmDeleteApiResponse } from "@/api/vm/dto";
+import { VmInstanceDetails, DeleteConfirmModal } from "@/components/vm";
+import { message } from "ant-design-vue";
+import {
+  VmInstance,
+  getPowerActionCode,
+  type PowerActionString,
+} from "@/types/vm";
+import { getVmApi } from "@/api/vm";
+import {
+  VmInstanceDetails,
+  VmInstancePowerStatusDropdown,
+} from "@/components/vm";
 
 /* ==========================================================================
    Props
@@ -45,9 +73,10 @@ interface InstanceDetailProps {
 const props = defineProps<InstanceDetailProps>();
 
 /* ==========================================================================
-   I18n
+   Composables
    ========================================================================== */
 const { t } = useI18n();
+const router = useRouter();
 
 /* ==========================================================================
    Reactive State
@@ -65,6 +94,11 @@ const instanceDetails = ref<VmInstance>(
 
 /* 로딩 상태 관리 */
 const isLoading = ref(true);
+const isPowerActionLoading = ref(false);
+
+/* 삭제 모달 및 로딩 상태 관리 */
+const showDeleteModal = ref(false);
+const deleteLoading = ref(false);
 
 /* ==========================================================================
    API Functions
@@ -85,6 +119,77 @@ const loadInstanceData = async () => {
     console.error("Failed to load instance data:", error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+/* ==========================================================================
+   Event Handlers
+   ========================================================================== */
+/* 파워 상태 액션 핸들러 */
+const handlePowerStatusAction = async (action: PowerActionString) => {
+  isPowerActionLoading.value = true;
+
+  /* 작업 시작 알림 */
+  const hideProgressMessage = message.loading(
+    t("message.vm.instance.action-in-progress", { action }),
+    0 // 수동으로 닫을 때까지 유지
+  );
+
+  try {
+    const vmApi = await getVmApi();
+    const actionCode = getPowerActionCode(action);
+    await vmApi.updatePowerStatus(props.instanceId, actionCode);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 성공 메시지 표시 */
+    message.success(t("message.vm.instance.action-success", { action }));
+
+    /* 인스턴스 정보 새로고침 */
+    await loadInstanceData();
+  } catch (error) {
+    console.error("Failed to update power status:", error);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 에러 메시지 표시 */
+    message.error(t("message.vm.instance.action-error"));
+  } finally {
+    isPowerActionLoading.value = false;
+  }
+};
+
+/* ==========================================================================
+   Lifecycle Hooks
+   ========================================================================== */
+/* VM 인스턴스 삭제 처리 */
+const handleDelete = async () => {
+  try {
+    deleteLoading.value = true;
+    const vmApi = await getVmApi();
+    const result: VmDeleteApiResponse = await vmApi.deleteInstance(
+      props.instanceId
+    );
+
+    if (result.isDeleted && result.isAccepted) {
+      message.success(
+        t("message.vm.instance.delete-success", {
+          name: instanceDetails.value.name,
+        })
+      );
+      // 삭제 성공 후 메인 페이지로 이동
+      await router.push("/main");
+    } else {
+      message.error(t("message.vm.instance.delete-failed"));
+    }
+  } catch (error) {
+    message.error(t("message.vm.instance.delete-error"));
+    console.error("Failed to delete instance:", error);
+  } finally {
+    deleteLoading.value = false;
+    showDeleteModal.value = false;
   }
 };
 

@@ -24,6 +24,7 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], // 사용하지 않는 변수 경고 (단, _로 시작하는 인자 무시)
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off", // 프로덕션에선 console 경고
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off", // 프로덕션에선 debugger 경고
+    "import/no-cycle": "error", // 순환 임포트 금지
   },
   overrides: [
     {
