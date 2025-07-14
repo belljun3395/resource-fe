@@ -1,5 +1,3 @@
-import { getPowerStatusCode } from "@/types/vm.converter";
-
 /**
  * VM 인스턴스의 전원 상태를 나타내는 열거형
  * 서버에서 전달되는 숫자 코드와 매핑됨
@@ -59,9 +57,18 @@ export interface VmFlavor {
  * VM 인스턴스 데이터의 공통 베이스 인터페이스
  */
 export interface VmInstanceBaseData {
- * VM 인스턴스 파워 액션을 나타내는 열거형
- * 서버 API의 InstancePowerStatusAction과 매핑됨
- */
+  /** 인스턴스 이름 */
+  name: string;
+  /** 인스턴스 고유 식별자 */
+  id: string;
+  /** 현재 전원 상태 */
+  powerState: PowerStatusString;
+  /** 사용자 정의 별칭 */
+  alias: string;
+  /** 호스트 서버 정보 */
+  host: string;
+}
+
 export enum PowerAction {
   /** 인스턴스 시작 (actionCode: 0L) */
   START = "start",
@@ -130,11 +137,8 @@ export interface VmInstanceListData extends VmInstanceBaseData {
   source: VmSource;
   /** VM 플레이버 정보 */
   flavor: VmFlavor;
-=======
- * PowerStatusString을 PowerStatusCode로 변환하는 유틸리티 함수
- * @param powerState - 변환할 전원 상태 문자열 (예: "RUNNING")
- * @returns 해당하는 전원 상태 코드 (예: "4")
- */
+}
+
 export function getPowerStatusCode(
   powerState: PowerStatusString
 ): PowerStatusCode {

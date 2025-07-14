@@ -1,9 +1,4 @@
-import type {
-  PowerStatusString,
-  VmSource,
-  VmFlavor,
-  VmInstanceList,
-} from "@/types/vm";
+import type { PowerStatusString, VmInstanceList } from "@/types/vm";
 
 /* ==========================================================================
    API 요청 파라미터 인터페이스
@@ -86,8 +81,7 @@ export interface VmListResponse {
   totalCount: number;
   /** VM 인스턴스 목록 */
   data: VmInstanceList[];
-=======
-import type { PowerStatusString } from "@/types/vm";
+}
 
 export interface VmSource {
   type: string;

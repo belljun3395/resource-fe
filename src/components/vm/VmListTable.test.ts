@@ -330,15 +330,15 @@ describe("VmListTable.vue: VM 인스턴스 목록 테이블 컴포넌트", () =>
       // customRow 함수를 직접 테스트합니다.
       const vm = wrapper.vm as any;
       const customRowResult = vm.customRow(mockVmInstanceList[0]);
-      
+
       // 반환된 객체가 올바른 구조를 가지는지 확인합니다.
-      expect(customRowResult).toHaveProperty('onClick');
-      expect(customRowResult).toHaveProperty('style');
-      expect(customRowResult.style.cursor).toBe('pointer');
-      
+      expect(customRowResult).toHaveProperty("onClick");
+      expect(customRowResult).toHaveProperty("style");
+      expect(customRowResult.style.cursor).toBe("pointer");
+
       // 클릭 핸들러를 실행합니다.
       customRowResult.onClick();
-      
+
       // 올바른 경로로 네비게이션되었는지 확인합니다.
       expect(mockPush).toHaveBeenCalledWith("/servers/instances/vm-123");
     });
@@ -357,10 +357,10 @@ describe("VmListTable.vue: VM 인스턴스 목록 테이블 컴포넌트", () =>
       // 두 번째 행의 customRow 함수를 테스트합니다.
       const vm = wrapper.vm as any;
       const customRowResult = vm.customRow(mockVmInstanceList[1]);
-      
+
       // 클릭 핸들러를 실행합니다.
       customRowResult.onClick();
-      
+
       // 올바른 경로로 네비게이션되었는지 확인합니다.
       expect(mockPush).toHaveBeenCalledWith("/servers/instances/vm-456");
     });
