@@ -109,10 +109,47 @@ const mockGetInstance = async (
   return createMockVmInstance(instanceId);
 };
 
+const mockUpdatePowerStatus = async (
+  instanceId: string | number,
+  powerStatusAction: string
+): Promise<any> => {
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1000 + Math.random() * 1000)
+  );
+
+  console.log(
+    `🔧 [Mock] Updating power status for VM ${instanceId} with action: ${powerStatusAction}`
+  );
+
+  const statusMap: Record<string, string> = {
+    "0": "RUNNING", // START
+    "1": "SHUTDOWN", // SHUTDOWN
+    "2": "RUNNING", // REBOOT (결과적으로 RUNNING)
+    "3": "PAUSED", // PAUSE
+  };
+
+  return {
+    id: instanceId,
+    name: `vm-instance-${instanceId}`,
+    description: `Power status updated with action: ${powerStatusAction}`,
+    alias: `vm-${instanceId}`,
+    powerStatus: statusMap[powerStatusAction] || "NOSTATE",
+    host: `host-${instanceId}.example.com`,
+    message: `Power status action '${powerStatusAction}' applied successfully`,
+    code: "200",
+  };
+};
+
 export const vmApiMock = {
   async getInstance(
     instanceId: string | number
   ): Promise<VmInstanceApiResponse> {
     return mockGetInstance(instanceId);
+  },
+  async updatePowerStatus(
+    instanceId: string | number,
+    powerStatusAction: string
+  ): Promise<any> {
+    return mockUpdatePowerStatus(instanceId, powerStatusAction);
   },
 };
