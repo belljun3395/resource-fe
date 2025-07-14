@@ -33,3 +33,10 @@ export interface VmInstanceApiResponse {
   flavor: VmFlavor;
   createdAt: string;
 }
+
+export interface PowerStatusUpdateResponse {
+  success: boolean;
+  message?: string;
+  instanceId: string | number;
+  newPowerStatus?: PowerStatusString;
+}

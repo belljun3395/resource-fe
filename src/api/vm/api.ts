@@ -3,7 +3,9 @@ import type { ApiResponse } from "@/api/common";
 import type {
   VmInstanceApiResponse,
   VmInstanceCreateRequest,
+  PowerStatusUpdateResponse,
 } from "@/api/vm/dto";
+import type { PowerActionCode } from "@/types/vm";
 
 export const vmApi = {
   async getInstance(
@@ -14,7 +16,6 @@ export const vmApi = {
     );
     return response.data.data;
   },
-
   async createInstance(
     data: VmInstanceCreateRequest
   ): Promise<VmInstanceApiResponse> {
@@ -27,6 +28,15 @@ export const vmApi = {
         flavorId: data.flavorId,
         sourceType: "IMAGE",
         sourceId: data.imageId,
+  async updatePowerStatus(
+    instanceId: string | number,
+    powerStatusAction: PowerActionCode
+  ): Promise<PowerStatusUpdateResponse> {
+    const response = await instance.put<ApiResponse<PowerStatusUpdateResponse>>(
+      `/api/v1/servers/instances/power`,
+      {
+        instanceId,
+        powerStatusAction,
       }
     );
     return response.data.data;
