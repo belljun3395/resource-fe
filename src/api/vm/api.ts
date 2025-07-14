@@ -1,19 +1,44 @@
 import { instance } from "@/api/common";
 import type { ApiResponse } from "@/api/common";
 import type {
-  VmInstanceApiResponse,
+  VmInstanceDetailApiResponse,
+  VmListApiResponse,
+  VmListRequest,
   VmInstanceCreateRequest,
+  VmInstanceListApiResponse,
   PowerStatusUpdateResponse,
+  VmDeleteApiResponse,
 } from "@/api/vm/dto";
-import type { PowerActionCode } from "@/types/vm";
 
 export const vmApi = {
   async getInstance(
     instanceId: string | number
-  ): Promise<VmInstanceApiResponse> {
-    const response = await instance.get<ApiResponse<VmInstanceApiResponse>>(
-      `/api/v1/servers/instances/${instanceId}`
+  ): Promise<VmInstanceDetailApiResponse> {
+    const response = await instance.get<
+      ApiResponse<VmInstanceDetailApiResponse>
+    >(`/api/v1/servers/instances/${instanceId}`);
+    return response.data.data;
+  },
+
+  async getInstanceList(params: VmListRequest): Promise<VmListApiResponse> {
+    const response = await instance.get<VmListApiResponse>(
+      "/api/v1/servers/instances",
+      {
+        params: {
+          page: params.page,
+          size: params.size,
+        },
+      }
     );
+    return response.data;
+  },
+
+  async createInstance(
+    params: VmInstanceCreateRequest
+  ): Promise<VmInstanceListApiResponse> {
+    const response = await instance.post<
+      ApiResponse<VmInstanceListApiResponse>
+    >("/api/v1/servers/instances", params);
     return response.data.data;
   },
 
@@ -21,32 +46,20 @@ export const vmApi = {
     instanceId: string | number
   ): Promise<VmDeleteApiResponse> {
     const response = await instance.delete<ApiResponse<VmDeleteApiResponse>>(
-      `/api/v1/servers/instances`,
-      {
-        data: { instanceId: Number(instanceId) },
-  async createInstance(
-    data: VmInstanceCreateRequest
-  ): Promise<VmInstanceApiResponse> {
-    const response = await instance.post<ApiResponse<VmInstanceApiResponse>>(
-      `/api/v1/servers/instances`,
-      {
-        name: data.name,
-        description: data.description,
-        host: "192.168.1.1",
-        flavorId: data.flavorId,
-        sourceType: "IMAGE",
-        sourceId: data.imageId,
+      `/api/v1/servers/instances/${instanceId}`
+    );
+    return response.data.data;
+  },
+
   async updatePowerStatus(
     instanceId: string | number,
-    powerStatusAction: PowerActionCode
+    actionCode: string
   ): Promise<PowerStatusUpdateResponse> {
-    const response = await instance.put<ApiResponse<PowerStatusUpdateResponse>>(
-      `/api/v1/servers/instances/power`,
-      {
-        instanceId,
-        powerStatusAction,
-      }
-    );
+    const response = await instance.patch<
+      ApiResponse<PowerStatusUpdateResponse>
+    >(`/api/v1/servers/instances/${instanceId}/power-status`, {
+      actionCode,
+    });
     return response.data.data;
   },
 };

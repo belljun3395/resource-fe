@@ -4,7 +4,7 @@ import Antd from "ant-design-vue";
 import { message } from "ant-design-vue";
 import VmInstanceDetails from "./VmInstanceDetails.vue";
 import { VmInstance } from "@/types/vm";
-import type { VmInstanceData } from "@/types/vm";
+import type { VmInstanceDetailData } from "@/types/vm";
 import { createI18n } from "vue-i18n";
 import { messages } from "@/locales";
 
@@ -55,7 +55,7 @@ const i18n = createI18n({
 });
 
 describe("VmInstanceDetails.vue: VM 인스턴스 상세 정보 컴포넌트", () => {
-  let mockVmInstance: VmInstance;
+  let mockVmInstance: VmInstance<VmInstanceDetailData>;
 
   // 각 테스트 케이스 실행 전에 공통적으로 사용될 초기화 로직을 설정합니다.
   beforeEach(() => {
@@ -63,7 +63,7 @@ describe("VmInstanceDetails.vue: VM 인스턴스 상세 정보 컴포넌트", ()
     vi.clearAllMocks();
 
     // 테스트에 사용될 가상 머신 인스턴스 데이터를 생성합니다.
-    const mockData: VmInstanceData = {
+    const mockData: VmInstanceDetailData = {
       name: "test-vm-instance",
       id: "vm-123",
       powerState: "RUNNING",

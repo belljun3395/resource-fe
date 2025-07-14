@@ -13,9 +13,12 @@
         </a-breadcrumb>
       </template>
       <template #extra>
-        <a-button key="edit" type="primary">{{
-          t("message.vm.instance.button-edit")
-        }}</a-button>
+        <VmInstancePowerStatusDropdown
+          :powerState="instanceDetails.powerState"
+          :instanceId="props.instanceId"
+          :loading="isPowerActionLoading"
+          @powerStatusChange="handlePowerStatusAction"
+        />
         <a-button key="delete" danger @click="showDeleteModal = true">{{
           t("message.vm.instance.button-delete")
         }}</a-button>
@@ -45,19 +48,16 @@ import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { message } from "ant-design-vue";
-import { VmInstance } from "@/types/vm";
-import { getVmApi } from "@/api/vm";
-import type { VmDeleteApiResponse } from "@/api/vm/dto";
-import { VmInstanceDetails, DeleteConfirmModal } from "@/components/vm";
-import { message } from "ant-design-vue";
 import {
   VmInstance,
   getPowerActionCode,
   type PowerActionString,
 } from "@/types/vm";
 import { getVmApi } from "@/api/vm";
+import type { VmDeleteApiResponse } from "@/api/vm/dto";
 import {
   VmInstanceDetails,
+  DeleteConfirmModal,
   VmInstancePowerStatusDropdown,
 } from "@/components/vm";
 
@@ -122,6 +122,7 @@ const loadInstanceData = async () => {
 /* ==========================================================================
    Event Handlers
    ========================================================================== */
+
 /* 파워 상태 액션 핸들러 */
 const handlePowerStatusAction = async (action: PowerActionString) => {
   isPowerActionLoading.value = true;
@@ -177,7 +178,7 @@ const handleDelete = async () => {
         })
       );
       // 삭제 성공 후 메인 페이지로 이동
-      await router.push("/main");
+      await router.push("/servers/instances");
     } else {
       message.error(t("message.vm.instance.delete-failed"));
     }
@@ -249,6 +250,7 @@ onMounted(() => {
 /* ==========================================================================
    Detail Section Styling
    ========================================================================== */
+
 
 /* 로딩 상태 스타일 */
 .loading {

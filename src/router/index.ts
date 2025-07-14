@@ -11,8 +11,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/LoginPage.vue"),
   },
   {
-    path: "/:pathMatch(.*)*",
-    component: () => import("@/views/NotFoundPage.vue"),
+    path: "/servers/instances",
+    component: () => import("@/views/vm/InstanceListView.vue"),
+    meta: { auth: true },
   },
   {
     path: "/servers/instances/create",
@@ -20,10 +21,14 @@ const routes: Array<RouteRecordRaw> = [
     meta: { auth: true },
   },
   {
-    path: "/servers/instances/:instanceId",
+    path: "/servers/instances/:instanceId(\\d+)",
     component: () => import("@/views/vm/InstanceDetailView.vue"),
     props: true,
     meta: { auth: true },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("@/views/NotFoundPage.vue"),
   },
 ];
 
@@ -39,7 +44,7 @@ router.beforeEach((to, _from, next) => {
     (to.path === "/" || to.path.toLocaleLowerCase() === "/login") &&
     userStore.isLogin()
   ) {
-    next("/main");
+    next("/servers/instances");
     return;
   }
 
