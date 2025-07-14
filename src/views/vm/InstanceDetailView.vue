@@ -49,6 +49,17 @@ import { VmInstance } from "@/types/vm";
 import { getVmApi } from "@/api/vm";
 import type { VmDeleteApiResponse } from "@/api/vm/dto";
 import { VmInstanceDetails, DeleteConfirmModal } from "@/components/vm";
+import { message } from "ant-design-vue";
+import {
+  VmInstance,
+  getPowerActionCode,
+  type PowerActionString,
+} from "@/types/vm";
+import { getVmApi } from "@/api/vm";
+import {
+  VmInstanceDetails,
+  VmInstancePowerStatusDropdown,
+} from "@/components/vm";
 
 /* ==========================================================================
    Props
@@ -80,6 +91,7 @@ const instanceDetails = ref<VmInstance>(
 
 /* 로딩 상태 관리 */
 const isLoading = ref(true);
+const isPowerActionLoading = ref(false);
 
 /* 삭제 모달 및 로딩 상태 관리 */
 const showDeleteModal = ref(false);
@@ -104,6 +116,45 @@ const loadInstanceData = async () => {
     console.error("Failed to load instance data:", error);
   } finally {
     isLoading.value = false;
+  }
+};
+
+/* ==========================================================================
+   Event Handlers
+   ========================================================================== */
+/* 파워 상태 액션 핸들러 */
+const handlePowerStatusAction = async (action: PowerActionString) => {
+  isPowerActionLoading.value = true;
+
+  /* 작업 시작 알림 */
+  const hideProgressMessage = message.loading(
+    t("message.vm.instance.action-in-progress", { action }),
+    0 // 수동으로 닫을 때까지 유지
+  );
+
+  try {
+    const vmApi = await getVmApi();
+    const actionCode = getPowerActionCode(action);
+    await vmApi.updatePowerStatus(props.instanceId, actionCode);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 성공 메시지 표시 */
+    message.success(t("message.vm.instance.action-success", { action }));
+
+    /* 인스턴스 정보 새로고침 */
+    await loadInstanceData();
+  } catch (error) {
+    console.error("Failed to update power status:", error);
+
+    /* 진행 중 메시지 숨기기 */
+    hideProgressMessage();
+
+    /* 에러 메시지 표시 */
+    message.error(t("message.vm.instance.action-error"));
+  } finally {
+    isPowerActionLoading.value = false;
   }
 };
 

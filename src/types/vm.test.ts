@@ -8,8 +8,12 @@ import {
   getPowerStatusCode,
   getPowerStatusFromCode,
   VmInstance,
+  PowerAction,
+  POWER_ACTION_CODE_MAP,
+  getPowerActionCode,
   type PowerStatusString,
   type PowerStatusCode,
+  type PowerActionString,
   type VmInstanceData,
 } from "./vm";
 
@@ -146,5 +150,115 @@ describe("VmInstance: VM 인스턴스 클래스", () => {
       const vm = new VmInstance(specialData);
       expect(vm.name).toBe("vm-!@#$");
     });
+  });
+});
+
+describe("PowerAction: 파워 액션 열거형", () => {
+  it("각 파워 액션에 대한 문자열 값이 정확해야 합니다.", () => {
+    expect(PowerAction.START).toBe("start");
+    expect(PowerAction.SHUTDOWN).toBe("shutdown");
+    expect(PowerAction.REBOOT).toBe("reboot");
+    expect(PowerAction.PAUSE).toBe("pause");
+  });
+
+  it("PowerAction 열거형의 모든 값이 PowerActionString 타입과 일치해야 합니다.", () => {
+    const actionValues: PowerActionString[] = Object.values(PowerAction);
+    expect(actionValues).toEqual(["start", "shutdown", "reboot", "pause"]);
+  });
+});
+
+describe("POWER_ACTION_CODE_MAP: 파워 액션 코드 매핑", () => {
+  it("각 파워 액션에 대한 서버 코드 매핑이 정확해야 합니다.", () => {
+    expect(POWER_ACTION_CODE_MAP[PowerAction.START]).toBe("0");
+    expect(POWER_ACTION_CODE_MAP[PowerAction.SHUTDOWN]).toBe("1");
+    expect(POWER_ACTION_CODE_MAP[PowerAction.REBOOT]).toBe("2");
+    expect(POWER_ACTION_CODE_MAP[PowerAction.PAUSE]).toBe("3");
+  });
+
+  it("매핑 객체가 모든 PowerAction 값을 포함해야 합니다.", () => {
+    const mappedActions = Object.keys(POWER_ACTION_CODE_MAP);
+    const allActions = Object.values(PowerAction);
+
+    expect(mappedActions.sort()).toEqual(allActions.sort());
+  });
+});
+
+describe("getPowerActionCode: 파워 액션 -> 서버 코드 변환", () => {
+  it("PowerActionString을 올바른 서버 코드로 변환해야 합니다.", () => {
+    expect(getPowerActionCode("start")).toBe("0");
+    expect(getPowerActionCode("shutdown")).toBe("1");
+    expect(getPowerActionCode("reboot")).toBe("2");
+    expect(getPowerActionCode("pause")).toBe("3");
+  });
+
+  it("PowerAction 열거형 값으로도 변환이 가능해야 합니다.", () => {
+    expect(getPowerActionCode(PowerAction.START)).toBe("0");
+    expect(getPowerActionCode(PowerAction.SHUTDOWN)).toBe("1");
+    expect(getPowerActionCode(PowerAction.REBOOT)).toBe("2");
+    expect(getPowerActionCode(PowerAction.PAUSE)).toBe("3");
+  });
+});
+
+describe("PowerAction과 PowerStatus의 독립성", () => {
+  it("PowerAction과 PowerStatus는 서로 다른 도메인을 다뤄야 합니다.", () => {
+    // PowerAction은 사용자 액션을 나타냄
+    const actions = Object.values(PowerAction);
+    expect(actions).toEqual(["start", "shutdown", "reboot", "pause"]);
+
+    // PowerStatus는 인스턴스 상태를 나타냄
+    const statusKeys = Object.keys(PowerStatus).filter((key) =>
+      isNaN(Number(key))
+    );
+    expect(statusKeys).toEqual([
+      "PAUSED",
+      "SHUTDOWN",
+      "CRASHED",
+      "NOSTATE",
+      "RUNNING",
+      "SUSPEN",
+    ]);
+
+    // 두 도메인은 서로 다름
+    expect(actions).not.toEqual(statusKeys);
+  });
+
+  it("액션과 상태의 코드 체계가 다름을 확인해야 합니다.", () => {
+    // PowerAction 코드는 문자열 "0", "1", "2", "3"
+    const actionCodes = Object.values(POWER_ACTION_CODE_MAP);
+    expect(actionCodes).toEqual(["0", "1", "2", "3"]);
+
+    // PowerStatus 코드는 "0" ~ "5" (숫자 값만 추출)
+    const statusCodes = Object.values(PowerStatus)
+      .filter((val) => typeof val === "number")
+      .map(String);
+    expect(statusCodes).toEqual(["0", "1", "2", "3", "4", "5"]);
+
+    // 액션 코드는 상태 코드의 부분집합
+    actionCodes.forEach((code) => {
+      expect(statusCodes).toContain(code);
+    });
+  });
+});
+
+describe("타입 안전성 테스트", () => {
+  it("PowerActionString 타입이 올바른 값만 허용해야 합니다.", () => {
+    const validActions: PowerActionString[] = [
+      "start",
+      "shutdown",
+      "reboot",
+      "pause",
+    ];
+
+    validActions.forEach((action) => {
+      expect(() => getPowerActionCode(action)).not.toThrow();
+    });
+  });
+
+  it("getPowerActionCode 함수가 타입 안전성을 보장해야 합니다.", () => {
+    // 유효한 액션들
+    expect(getPowerActionCode("start")).toBeDefined();
+    expect(getPowerActionCode("shutdown")).toBeDefined();
+    expect(getPowerActionCode("reboot")).toBeDefined();
+    expect(getPowerActionCode("pause")).toBeDefined();
   });
 });
