@@ -175,9 +175,9 @@ const mockCreateInstance = async (
     powerStatus: "RUNNING" as PowerStatusString,
     host: `host-${Math.floor(Math.random() * 100)}.example.com`,
     source: {
-      type: "IMAGE",
-      id: params.imageId,
-      name: `image_${params.imageId}`,
+      type: params.sourceType,
+      id: params.sourceId,
+      name: `image_${params.sourceId}`,
     },
     flavor: {
       id: params.flavorId,

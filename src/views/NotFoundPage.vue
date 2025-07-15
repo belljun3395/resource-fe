@@ -10,9 +10,7 @@
         <a-button type="primary" size="large" @click="goHome">
           홈으로 돌아가기
         </a-button>
-        <a-button size="large" @click="goBack">
-          이전 페이지로
-        </a-button>
+        <a-button size="large" @click="goBack"> 이전 페이지로 </a-button>
       </div>
     </div>
   </div>
@@ -81,16 +79,16 @@ const goBack = () => {
   .error-code {
     font-size: 80px;
   }
-  
+
   .error-title {
     font-size: 20px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .action-buttons .ant-btn {
     width: 200px;
   }

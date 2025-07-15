@@ -72,7 +72,7 @@ defineEmits<Emits>();
 const { t } = useI18n();
 
 const selectedImage = computed(() =>
-  props.images.find((img) => img.id === props.formData.imageId)
+  props.images.find((img) => img.id === props.formData.sourceId)
 );
 
 const selectedFlavor = computed(() =>

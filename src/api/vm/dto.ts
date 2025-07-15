@@ -95,9 +95,11 @@ export interface VmFlavor {
 
 export interface VmInstanceCreateRequest {
   name: string;
-  description?: string;
-  imageId: number;
+  description: string;
+  host: string;
   flavorId: number;
+  sourceType: string;
+  sourceId: number;
 }
 
 export interface PowerStatusUpdateResponse {

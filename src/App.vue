@@ -29,8 +29,8 @@ const userStore = useUserStore();
    ========================================================================== */
 :root {
   /* Typography */
-  --font-family-primary: -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
+  --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   --font-weight-normal: 400;
   --font-size-base: 13px;
   --line-height-base: 18px;

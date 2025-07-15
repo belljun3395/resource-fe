@@ -106,8 +106,10 @@ const { t } = useI18n();
 const formData = ref<VmCreateFormData>({
   name: "",
   description: "",
-  imageId: null,
+  host: "",
   flavorId: null,
+  sourceType: "IMAGE",
+  sourceId: null,
 });
 
 // 현재 단계
@@ -141,7 +143,7 @@ const stepValidations = [
     return true;
   },
   () => {
-    if (!formData.value.imageId) {
+    if (!formData.value.sourceId) {
       message.error(t("message.vm.create.error-image-required"));
       return false;
     }
@@ -196,6 +198,11 @@ const handlePrevious = () => {
 };
 
 const handleCreateInstance = async () => {
+  if (!formData.value.sourceId) {
+    message.error(t("message.vm.create.error-image-required"));
+    return;
+  }
+
   if (!formData.value.flavorId) {
     message.error(t("message.vm.create.error-flavor-required"));
     return;
@@ -205,11 +212,17 @@ const handleCreateInstance = async () => {
 
   try {
     const vmApi = await getVmApi();
+
+    // 임의 IP 할당
+    const randomHost = `192.168.1.${Math.floor(Math.random() * 254) + 1}`;
+
     const response = await vmApi.createInstance({
       name: formData.value.name,
       description: formData.value.description,
-      imageId: formData.value.imageId!,
+      host: randomHost,
       flavorId: formData.value.flavorId,
+      sourceType: formData.value.sourceType,
+      sourceId: formData.value.sourceId!,
     });
 
     message.success(t("message.vm.create.success-created"));

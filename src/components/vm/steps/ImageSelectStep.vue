@@ -8,7 +8,7 @@
       row-key="id"
       :row-selection="{
         type: 'radio',
-        selectedRowKeys: formData.imageId ? [formData.imageId] : [],
+        selectedRowKeys: formData.sourceId ? [formData.sourceId] : [],
         onChange: handleImageSelect,
       }"
     >
@@ -25,7 +25,7 @@
       <a-button
         type="primary"
         @click="handleNext"
-        :disabled="!formData.imageId"
+        :disabled="!formData.sourceId"
         :loading="loading"
       >
         {{ t("message.vm.create.button-next") }}
@@ -75,7 +75,7 @@ const imageColumns = computed(() => [
 
 const handleImageSelect = (selectedRowKeys: number[]) => {
   const updatedFormData = { ...props.formData };
-  updatedFormData.imageId = selectedRowKeys[0] || null;
+  updatedFormData.sourceId = selectedRowKeys[0] || null;
   emit("update:form-data", updatedFormData);
 };
 

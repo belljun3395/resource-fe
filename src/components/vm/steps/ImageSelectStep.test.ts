@@ -47,8 +47,10 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
     mockFormData = {
       name: "test-vm",
       description: "test description",
-      imageId: null,
+      host: "",
       flavorId: null,
+      sourceType: "IMAGE",
+      sourceId: null,
     };
 
     mockImages = [

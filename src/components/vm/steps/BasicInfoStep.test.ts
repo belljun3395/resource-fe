@@ -35,8 +35,10 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
     mockFormData = {
       name: "",
       description: "",
-      imageId: null,
+      host: "",
       flavorId: null,
+      sourceType: "IMAGE",
+      sourceId: null,
     };
   });
 
@@ -68,8 +70,10 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
       const formDataWithValues = {
         name: "test-vm",
         description: "test description",
-        imageId: null,
+        host: "",
         flavorId: null,
+        sourceType: "IMAGE",
+        sourceId: null,
       };
 
       const wrapper = mount(BasicInfoStep, {

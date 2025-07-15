@@ -2,7 +2,8 @@ export * from "@/api/vm/dto";
 
 // 환경에 따른 API 선택
 const createVmApi = async () => {
-  const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === "development";
+  const isDevelopment =
+    import.meta.env.DEV || import.meta.env.MODE === "development";
   const useMock = import.meta.env.VITE_USE_MOCK === "true";
 
   if (isDevelopment && useMock) {

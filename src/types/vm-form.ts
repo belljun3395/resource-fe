@@ -1,6 +1,8 @@
 export interface VmCreateFormData {
   name: string;
   description: string;
-  imageId: number | null;
+  host: string;
   flavorId: number | null;
+  sourceType: string;
+  sourceId: number | null;
 }

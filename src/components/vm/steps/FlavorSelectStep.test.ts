@@ -47,8 +47,10 @@ describe("FlavorSelectStep.vue: VM 생성 플레이버 선택 단계", () => {
     mockFormData = {
       name: "test-vm",
       description: "test description",
-      imageId: 1,
+      host: "",
       flavorId: null,
+      sourceType: "IMAGE",
+      sourceId: 1,
     };
 
     mockFlavors = [

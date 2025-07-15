@@ -39,8 +39,10 @@ describe("ReviewStep.vue: VM 생성 검토 단계", () => {
     mockFormData = {
       name: "test-vm",
       description: "test description",
-      imageId: 1,
+      host: "",
       flavorId: 1,
+      sourceType: "IMAGE",
+      sourceId: 1,
     };
 
     mockImages = [
