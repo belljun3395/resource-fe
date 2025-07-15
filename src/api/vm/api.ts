@@ -55,10 +55,11 @@ export const vmApi = {
     instanceId: string | number,
     actionCode: string
   ): Promise<PowerStatusUpdateResponse> {
-    const response = await instance.patch<
+    const response = await instance.put<
       ApiResponse<PowerStatusUpdateResponse>
-    >(`/api/v1/servers/instances/${instanceId}/power-status`, {
-      actionCode,
+    >(`/api/v1/servers/instances/power`, {
+      instanceId: instanceId,
+      powerStatusAction: actionCode,
     });
     return response.data.data;
   },
