@@ -9,7 +9,7 @@
     "dev:api": "cross-env VITE_USE_MOCK=false vite",
     "build": "vue-tsc && vite build",
     "build:mock": "cross-env VITE_USE_MOCK=true NODE_ENV=development vue-tsc && vite build --mode development",
-    "build:prod": "cross-env VITE_USE_MOCK=false vue-tsc && vite build",
+    "build:prod": "cross-env VITE_USE_MOCK=false vue-tsc && vite build --mode prd",
     "preview": "vite preview",
     "preview:mock": "cross-env VITE_USE_MOCK=true vite preview",
     "test": "vitest",

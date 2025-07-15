@@ -29,7 +29,7 @@ jobs:
       run: pnpm install
       
     - name: Build for production with mock data
-      run: pnpm run build:mock
+      run: pnpm run build:prod
       
     - name: Copy index.html to 404.html for SPA routing
       run: cp dist/index.html dist/404.html
