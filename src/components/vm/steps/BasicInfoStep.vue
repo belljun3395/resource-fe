@@ -70,7 +70,7 @@ const existingNames = ref<Set<string>>(new Set());
 const loadExistingNames = async () => {
   try {
     const vmApi = await getVmApi();
-    const response = await vmApi.getInstanceList({ page: 1, size: 1000 });
+    const response = await vmApi.getInstanceList({ page: 0, size: 1000 });
     existingNames.value = new Set(
       response.data.map((instance) => instance.name.toLowerCase())
     );
