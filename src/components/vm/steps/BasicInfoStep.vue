@@ -2,9 +2,11 @@
   <div class="step-panel">
     <h3>{{ t("message.vm.create.step-basic") }}</h3>
     <a-form
+      ref="formRef"
       :model="props.formData"
       :rules="basicInfoRules"
       layout="vertical"
+      validateTrigger="input"
       @finish="handleNext"
     >
       <a-form-item
@@ -41,10 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { getVmApi } from "@/api/vm";
 import type { VmCreateFormData } from "@/types/vm-form";
+import type { FormInstance } from "ant-design-vue";
 
 interface Props {
   formData: VmCreateFormData;
@@ -62,6 +65,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>();
 const { t } = useI18n();
+
+// Form ref
+const formRef = ref<FormInstance>();
 
 // 중복 이름 검증을 위한 캐시
 const existingNames = ref<Set<string>>(new Set());
@@ -113,10 +119,18 @@ const basicInfoRules = computed(() => ({
   ],
 }));
 
-const updateName = (value: string) => {
+const updateName = async (value: string) => {
   const updatedFormData = { ...props.formData };
   updatedFormData.name = value;
   emit("update:form-data", updatedFormData);
+
+  // 즉시 validation 트리거
+  await nextTick();
+  if (formRef.value) {
+    formRef.value.validateFields(["name"]).catch(() => {
+      // validation 에러는 UI에서 처리되므로 여기서는 무시
+    });
+  }
 };
 
 const updateDescription = (value: string) => {
