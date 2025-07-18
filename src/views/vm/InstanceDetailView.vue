@@ -23,7 +23,7 @@
           :loading="isPowerActionLoading"
           @powerStatusChange="handlePowerStatusAction"
         />
-        <a-button key="delete" danger @click="showDeleteModal = true">{{
+        <a-button key="delete" danger :disabled="instanceDetails.powerState === 'RUNNING'" @click="showDeleteModal = true">{{
           t("message.vm.instance.button-delete")
         }}</a-button>
       </template>
