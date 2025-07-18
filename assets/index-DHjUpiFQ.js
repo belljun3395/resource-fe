@@ -1,0 +1,1 @@
+import{S as n}from"./index-C2erTFA8.js";const r=async()=>{{const{vmApi:a}=await n(async()=>{const{vmApi:i}=await import("./api-Ct08D-Yt.js");return{vmApi:i}},[]);return a}};let t=null;const o=async()=>(t||(t=await r()),t);export{o as g};
