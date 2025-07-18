@@ -4,7 +4,7 @@
       :title="
         isLoading ? t('message.vm.instance.loading') : instanceDetails.name
       "
-      @back="() => $router.go(-1)"
+      @back="() => $router.push('/servers/instances')"
     >
       <template #breadcrumb>
         <a-breadcrumb>
