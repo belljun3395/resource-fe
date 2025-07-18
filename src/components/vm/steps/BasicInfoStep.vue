@@ -27,6 +27,8 @@
           @update:value="updateDescription"
           :placeholder="t('message.vm.create.form-description-placeholder')"
           :rows="3"
+          :maxlength="80"
+          :showCount="true"
         />
       </a-form-item>
       <a-form-item>
@@ -64,6 +66,9 @@ const basicInfoRules = computed(() => ({
   name: [
     { required: true, message: t("message.vm.create.form-name-required") },
     { min: 2, max: 50, message: t("message.vm.create.form-name-length") },
+  ],
+  description: [
+    { max: 80, message: t("message.vm.create.form-description-length") },
   ],
 }));
 

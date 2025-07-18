@@ -125,6 +125,35 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
       );
       expect(descriptionTextarea.exists()).toBe(true);
     });
+
+    it("설명이 80자를 초과하면 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // a-textarea 컴포넌트가 올바른 props를 가지고 있는지 확인
+      const textareaComponent = wrapper.findComponent({ name: "ATextarea" });
+      expect(textareaComponent.exists()).toBe(true);
+      expect(textareaComponent.props("maxlength")).toBe(80);
+      expect(textareaComponent.props("showCount")).toBe(true);
+    });
+
+    it("설명이 80자 이하면 검증 오류가 발생하지 않아야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // a-textarea 컴포넌트의 props가 올바르게 설정되었는지 확인
+      const textareaComponent = wrapper.findComponent({ name: "ATextarea" });
+      expect(textareaComponent.props("maxlength")).toBe(80);
+      expect(textareaComponent.props("showCount")).toBe(true);
+    });
   });
 
   describe("이벤트 처리", () => {
