@@ -90,8 +90,8 @@ const basicInfoRules = computed(() => ({
       validator: (_rule: any, value: string) => {
         if (!value) return Promise.resolve();
 
-        // 공백만 있는지 검사
-        if (!value.trim()) {
+        // 공백이 포함되어 있는지 검사 (앞, 뒤, 중간 모든 공백)
+        if (/\s/.test(value)) {
           return Promise.reject(
             new Error(t("message.vm.create.form-name-no-whitespace"))
           );
