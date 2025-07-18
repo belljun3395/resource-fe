@@ -168,7 +168,7 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
       // 라디오 버튼이 체크되어 있는지 확인 (Ant Design table row selection)
       const radioInput = wrapper.find("input[type='radio']");
       expect(radioInput.exists()).toBe(true);
-      expect(radioInput.element.checked).toBe(true);
+      expect((radioInput.element as HTMLInputElement).checked).toBe(true);
     });
   });
 
