@@ -42,7 +42,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: { template: "<div>Home</div>" } },
-    { path: "/servers/instances", component: { template: "<div>Instances</div>" } },
+    {
+      path: "/servers/instances",
+      component: { template: "<div>Instances</div>" },
+    },
     { path: "/servers/instances/:instanceId", component: InstanceDetailView },
   ],
 });

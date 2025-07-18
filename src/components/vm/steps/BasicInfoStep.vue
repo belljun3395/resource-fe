@@ -41,8 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { getVmApi } from "@/api/vm";
 import type { VmCreateFormData } from "@/types/vm-form";
 
 interface Props {
@@ -62,10 +63,50 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>();
 const { t } = useI18n();
 
+// 중복 이름 검증을 위한 캐시
+const existingNames = ref<Set<string>>(new Set());
+
+// 기존 인스턴스 이름 목록 가져오기
+const loadExistingNames = async () => {
+  try {
+    const vmApi = await getVmApi();
+    const response = await vmApi.getInstanceList({ page: 1, size: 1000 });
+    existingNames.value = new Set(
+      response.data.map((instance) => instance.name.toLowerCase())
+    );
+  } catch (error) {
+    console.error("Failed to load existing instance names:", error);
+  }
+};
+
+// 컴포넌트 마운트 시 기존 이름 목록 로드
+loadExistingNames();
+
 const basicInfoRules = computed(() => ({
   name: [
     { required: true, message: t("message.vm.create.form-name-required") },
     { min: 2, max: 50, message: t("message.vm.create.form-name-length") },
+    {
+      validator: (_rule: any, value: string) => {
+        if (!value) return Promise.resolve();
+
+        // 공백만 있는지 검사
+        if (!value.trim()) {
+          return Promise.reject(
+            new Error(t("message.vm.create.form-name-no-whitespace"))
+          );
+        }
+
+        // 중복 이름 검사 (대소문자 구분 없이)
+        if (existingNames.value.has(value.toLowerCase())) {
+          return Promise.reject(
+            new Error(t("message.vm.create.form-name-duplicate"))
+          );
+        }
+
+        return Promise.resolve();
+      },
+    },
   ],
   description: [
     { max: 80, message: t("message.vm.create.form-description-length") },

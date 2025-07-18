@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import Antd from "ant-design-vue";
 import BasicInfoStep from "./BasicInfoStep.vue";
@@ -28,6 +28,15 @@ const i18n = createI18n({
   messages,
 });
 
+// Mock API
+const mockVmApi = {
+  getInstanceList: vi.fn(),
+};
+
+vi.mock("@/api/vm", () => ({
+  getVmApi: () => Promise.resolve(mockVmApi),
+}));
+
 describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
   let mockFormData: VmCreateFormData;
 
@@ -40,6 +49,19 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
       sourceType: "IMAGE",
       sourceId: null,
     };
+    
+    // Reset mock
+    mockVmApi.getInstanceList.mockResolvedValue({
+      data: [
+        { name: "existing-vm-1" },
+        { name: "Existing-VM-2" },
+        { name: "EXISTING-VM-3" },
+      ],
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   describe("컴포넌트 렌더링", () => {
@@ -153,6 +175,155 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
       const textareaComponent = wrapper.findComponent({ name: "ATextarea" });
       expect(textareaComponent.props("maxlength")).toBe(80);
       expect(textareaComponent.props("showCount")).toBe(true);
+    });
+  });
+
+  describe("이름 검증", () => {
+    it("공백만 입력된 이름은 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // 잠시 기다려서 컴포넌트가 완전히 마운트되도록 함
+      await wrapper.vm.$nextTick();
+
+      // 공백만 있는 이름 입력
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue("   ");
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // 검증 오류가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      expect(wrapper.text()).toContain("must not contain only whitespace");
+    });
+
+    it("중복된 이름은 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 중복된 이름 입력 (대소문자 구분 없이)
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue("existing-vm-1");
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // 검증 오류가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      expect(wrapper.text()).toContain("already exists");
+    });
+
+    it("대소문자가 다른 중복된 이름도 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 대소문자만 다른 중복된 이름 입력
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue("EXISTING-VM-1");
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // 검증 오류가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      expect(wrapper.text()).toContain("already exists");
+    });
+
+    it("유효한 이름은 검증 오류가 발생하지 않아야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 유효한 이름 입력
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue("new-unique-vm");
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // next 이벤트가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      const nextEvents = wrapper.emitted("next");
+      expect(nextEvents).toBeTruthy();
+    });
+
+    it("이름이 2자 미만이면 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      await wrapper.vm.$nextTick();
+
+      // 1자 이름 입력
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue("a");
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // 검증 오류가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      expect(wrapper.text()).toContain("2");
+    });
+
+    it("이름이 50자를 초과하면 검증 오류가 발생해야 합니다.", async () => {
+      const wrapper = mount(BasicInfoStep, {
+        props: { formData: mockFormData },
+        global: {
+          plugins: [i18n, Antd],
+        },
+      });
+
+      await wrapper.vm.$nextTick();
+
+      // 51자 이름 입력
+      const longName = "a".repeat(51);
+      const nameInput = wrapper.find("input[placeholder*='name']");
+      await nameInput.setValue(longName);
+
+      // 폼 제출 시도
+      const form = wrapper.find("form");
+      await form.trigger("submit");
+
+      // 검증 오류가 발생하는지 확인
+      await wrapper.vm.$nextTick();
+      expect(wrapper.text()).toContain("50");
     });
   });
 
