@@ -188,7 +188,7 @@ describe("ReviewStep.vue: VM 생성 검토 단계", () => {
     it("존재하지 않는 이미지 ID일 때 undefined가 반환되어야 합니다.", () => {
       const formDataWithInvalidImage = {
         ...mockFormData,
-        imageId: 999,
+        sourceId: 999,
       };
 
       const wrapper = mount(ReviewStep, {

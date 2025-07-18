@@ -119,7 +119,7 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
     });
 
     it("이미지가 선택되었을 때 다음 버튼이 활성화되어야 합니다.", () => {
-      const formDataWithImage = { ...mockFormData, imageId: 1 };
+      const formDataWithImage = { ...mockFormData, sourceId: 1 };
 
       const wrapper = mount(ImageSelectStep, {
         props: { formData: formDataWithImage, images: mockImages },
@@ -151,12 +151,12 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
       expect(emittedEvents).toBeTruthy();
       expect(emittedEvents![0][0]).toEqual({
         ...mockFormData,
-        imageId: 1,
+        sourceId: 1,
       });
     });
 
     it("선택된 이미지가 하이라이트되어야 합니다.", () => {
-      const formDataWithImage = { ...mockFormData, imageId: 1 };
+      const formDataWithImage = { ...mockFormData, sourceId: 1 };
 
       const wrapper = mount(ImageSelectStep, {
         props: { formData: formDataWithImage, images: mockImages },
@@ -165,9 +165,9 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
         },
       });
 
-      // 선택된 행이 하이라이트되는지 확인
-      const selectedRow = wrapper.find(".ant-table-row-selected");
-      expect(selectedRow.exists()).toBe(true);
+      // 라디오 버튼이 체크되어 있는지 확인
+      const radioInput = wrapper.find("input[type='radio'][value='1']");
+      expect(radioInput.exists()).toBe(true);
     });
   });
 
@@ -189,7 +189,7 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
     });
 
     it("다음 버튼 클릭 시 next 이벤트가 발생해야 합니다.", async () => {
-      const formDataWithImage = { ...mockFormData, imageId: 1 };
+      const formDataWithImage = { ...mockFormData, sourceId: 1 };
 
       const wrapper = mount(ImageSelectStep, {
         props: { formData: formDataWithImage, images: mockImages },
@@ -209,7 +209,7 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
 
   describe("로딩 상태", () => {
     it("로딩 상태일 때 다음 버튼이 로딩 상태로 표시되어야 합니다.", () => {
-      const formDataWithImage = { ...mockFormData, imageId: 1 };
+      const formDataWithImage = { ...mockFormData, sourceId: 1 };
 
       const wrapper = mount(ImageSelectStep, {
         props: {
@@ -227,7 +227,7 @@ describe("ImageSelectStep.vue: VM 생성 이미지 선택 단계", () => {
     });
 
     it("로딩 상태가 아닐 때 다음 버튼이 정상 상태로 표시되어야 합니다.", () => {
-      const formDataWithImage = { ...mockFormData, imageId: 1 };
+      const formDataWithImage = { ...mockFormData, sourceId: 1 };
 
       const wrapper = mount(ImageSelectStep, {
         props: {
