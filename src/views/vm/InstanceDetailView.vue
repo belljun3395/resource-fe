@@ -8,8 +8,12 @@
     >
       <template #breadcrumb>
         <a-breadcrumb>
-          <a-breadcrumb-item>Server</a-breadcrumb-item>
-          <a-breadcrumb-item>Instance</a-breadcrumb-item>
+          <a-breadcrumb-item>{{
+            t("message.vm.instance.breadcrumb-server")
+          }}</a-breadcrumb-item>
+          <a-breadcrumb-item>{{
+            t("message.vm.instance.breadcrumb-instance")
+          }}</a-breadcrumb-item>
         </a-breadcrumb>
       </template>
       <template #extra>

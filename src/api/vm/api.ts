@@ -49,8 +49,8 @@ export const vmApi = {
       `/api/v1/servers/instances`,
       {
         data: {
-          instanceId: instanceId
-        }
+          instanceId: instanceId,
+        },
       }
     );
     return response.data.data;
@@ -60,12 +60,13 @@ export const vmApi = {
     instanceId: string | number,
     actionCode: string
   ): Promise<PowerStatusUpdateResponse> {
-    const response = await instance.put<
-      ApiResponse<PowerStatusUpdateResponse>
-    >(`/api/v1/servers/instances/power`, {
-      instanceId: instanceId,
-      powerStatusAction: actionCode,
-    });
+    const response = await instance.put<ApiResponse<PowerStatusUpdateResponse>>(
+      `/api/v1/servers/instances/power`,
+      {
+        instanceId: instanceId,
+        powerStatusAction: actionCode,
+      }
+    );
     return response.data.data;
   },
 };

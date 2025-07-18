@@ -2,16 +2,15 @@
   <div class="instance-create-view">
     <div class="page-header">
       <a-breadcrumb>
-        <a-breadcrumb-item>
-          <router-link to="/">홈</router-link>
-        </a-breadcrumb-item>
-        <a-breadcrumb-item>
-          <router-link to="/servers">서버</router-link>
-        </a-breadcrumb-item>
-        <a-breadcrumb-item>
-          <router-link to="/servers/instances">인스턴스</router-link>
-        </a-breadcrumb-item>
-        <a-breadcrumb-item>생성</a-breadcrumb-item>
+        <a-breadcrumb-item>{{
+          t("message.vm.instance.breadcrumb-server")
+        }}</a-breadcrumb-item>
+        <a-breadcrumb-item>{{
+          t("message.vm.instance.breadcrumb-instance")
+        }}</a-breadcrumb-item>
+        <a-breadcrumb-item>{{
+          t("message.vm.instance.breadcrumb-create")
+        }}</a-breadcrumb-item>
       </a-breadcrumb>
 
       <div class="page-title">
