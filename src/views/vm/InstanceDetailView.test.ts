@@ -70,7 +70,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // RUNNING 상태로 설정
-      (wrapper.vm as any).instanceDetails.powerState = "RUNNING" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "RUNNING" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');
@@ -87,7 +88,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // SHUTDOWN 상태로 설정
-      (wrapper.vm as any).instanceDetails.powerState = "SHUTDOWN" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "SHUTDOWN" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');
@@ -104,7 +106,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // PAUSED 상태로 설정
-      (wrapper.vm as any).instanceDetails.powerState = "PAUSED" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "PAUSED" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');
@@ -121,7 +124,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // NOSTATE 상태로 설정 (기본값)
-      (wrapper.vm as any).instanceDetails.powerState = "NOSTATE" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "NOSTATE" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');
@@ -140,7 +144,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // SHUTDOWN 상태로 설정하여 버튼 활성화
-      (wrapper.vm as any).instanceDetails.powerState = "SHUTDOWN" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "SHUTDOWN" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');
@@ -159,7 +164,8 @@ describe("InstanceDetailView.vue: VM 인스턴스 상세 뷰", () => {
       });
 
       // RUNNING 상태로 설정하여 버튼 비활성화
-      (wrapper.vm as any).instanceDetails.powerState = "RUNNING" as PowerStatusString;
+      (wrapper.vm as any).instanceDetails.powerState =
+        "RUNNING" as PowerStatusString;
       await wrapper.vm.$nextTick();
 
       const deleteButton = wrapper.find('[key="delete"]');

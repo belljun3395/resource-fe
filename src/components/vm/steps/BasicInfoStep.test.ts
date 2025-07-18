@@ -49,7 +49,7 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
       sourceType: "IMAGE",
       sourceId: null,
     };
-    
+
     // Reset mock
     mockVmApi.getInstanceList.mockResolvedValue({
       data: [
@@ -213,7 +213,7 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
 
       // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // 중복된 이름 입력 (대소문자 구분 없이)
       const nameInput = wrapper.find("input[placeholder*='name']");
@@ -238,7 +238,7 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
 
       // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // 대소문자만 다른 중복된 이름 입력
       const nameInput = wrapper.find("input[placeholder*='name']");
@@ -263,7 +263,7 @@ describe("BasicInfoStep.vue: VM 생성 기본 정보 단계", () => {
 
       // 컴포넌트가 마운트되고 API 호출이 완료될 때까지 기다림
       await wrapper.vm.$nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // 유효한 이름 입력
       const nameInput = wrapper.find("input[placeholder*='name']");

@@ -5,9 +5,11 @@
         <a-breadcrumb-item>{{
           t("message.vm.instance.breadcrumb-server")
         }}</a-breadcrumb-item>
-        <a-breadcrumb-item>{{
-          t("message.vm.instance.breadcrumb-instance")
-        }}</a-breadcrumb-item>
+        <a-breadcrumb-item>
+          <router-link to="/servers/instances">{{
+            t("message.vm.instance.breadcrumb-instance")
+          }}</router-link>
+        </a-breadcrumb-item>
         <a-breadcrumb-item>{{
           t("message.vm.instance.breadcrumb-create")
         }}</a-breadcrumb-item>
