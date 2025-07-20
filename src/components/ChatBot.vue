@@ -136,7 +136,7 @@
    ========================================================================== */
 import { ref, nextTick, onMounted, computed, withDefaults } from "vue";
 import { useI18n } from "vue-i18n";
-import { chatService } from "@/services/chatService";
+import { chatApi } from "@/api/chat";
 import { useUserStore } from "@/store/userStore";
 import type { ChatMessage, QuickTopic } from "@/types/chatbot";
 
@@ -192,20 +192,25 @@ const conversationId = ref<string>();
 const showTopicButtons = ref(true);
 
 /* ==========================================================================
+   Utility Functions
+   ========================================================================== */
+const generateUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
+/* ==========================================================================
    Quick Topics Configuration
    ========================================================================== */
 const defaultQuickTopics: QuickTopic[] = [
   {
-    id: "dashboard",
-    icon: "📊",
-    text: t('message.chatbot.topics.dashboard'),
-    message: t('message.chatbot.messages.dashboard-request')
-  },
-  {
-    id: "insights",
-    icon: "💡",
-    text: t('message.chatbot.topics.insights'),
-    message: t('message.chatbot.messages.insights-request')
+    id: "general",
+    icon: "💬",
+    text: "일반 질문",
+    message: "안녕하세요! 무엇을 도와드릴까요?"
   }
 ];
 
@@ -288,106 +293,13 @@ const sendMessage = async () => {
   isLoading.value = true;
 
   try {
-    // 대시보드 요약 또는 인사이트 분석 관련 질문인지 확인
-    const isDashboardQuery =
-      userMessage.toLowerCase().includes("대시보드") ||
-      userMessage.toLowerCase().includes("요약") ||
-      userMessage.toLowerCase().includes("현황") ||
-      userMessage.toLowerCase().includes("상태") ||
-      userMessage.toLowerCase().includes("지표");
-
-    const isInsightQuery =
-      userMessage.toLowerCase().includes("인사이트") ||
-      userMessage.toLowerCase().includes("분석") ||
-      userMessage.toLowerCase().includes("보고서") ||
-      userMessage.toLowerCase().includes("개선") ||
-      userMessage.toLowerCase().includes("제안") ||
-      userMessage.toLowerCase().includes("최적화");
-
-    const isValidQuery = isDashboardQuery || isInsightQuery;
-
     let response;
-    if (isValidQuery) {
-      // 메트릭 데이터를 먼저 가져온 후 시스템 프롬프트와 함께 전송
-      try {
-        const metricsData = await chatService.getDashboard();
-        let systemPrompt = '';
-        
-        if (isDashboardQuery) {
-          systemPrompt = `당신은 대시보드 요약 전문 AI 어시스턴트입니다.
-현재 시스템 데이터를 바탕으로 핵심 지표와 현황을 요약해서 제공해주세요.
-
-📊 성능 메트릭:
-- 평균 응답시간: ${metricsData.performance?.avgResponseTime}ms
-- 95퍼센타일 응답시간: ${metricsData.performance?.p95ResponseTime}ms  
-- 오류율: ${(metricsData.performance?.errorRate * 100).toFixed(1)}%
-- 처리량: ${metricsData.performance?.throughputPerHour}/시간
-
-📈 사용량 통계:
-- 총 대화수: ${metricsData.usage?.totalConversations}
-- 평균 메시지/대화: ${metricsData.usage?.avgMessagesPerConversation}
-- 총 토큰 사용량: ${metricsData.usage?.totalTokensUsed}
-
-📋 품질 지표:
-- 평균 품질점수: ${metricsData.quality?.avgQualityScore}/10
-- 사용자 만족도: ${metricsData.quality?.userSatisfactionScore}/10
-- 성공률: ${((metricsData.quality?.successfulInteractions / (metricsData.quality?.successfulInteractions + metricsData.quality?.failedInteractions)) * 100).toFixed(1)}%
-
-대시보드 형태로 현재 상황을 명확하고 간결하게 요약해주세요.`;
-        } else if (isInsightQuery) {
-          systemPrompt = `당신은 인사이트 분석 전문 AI 어시스턴트입니다.
-다음 데이터를 분석하여 보고서 작성에 활용할 수 있는 인사이트와 개선 제안을 제공해주세요.
-
-📊 성능 메트릭:
-- 평균 응답시간: ${metricsData.performance?.avgResponseTime}ms
-- 95퍼센타일 응답시간: ${metricsData.performance?.p95ResponseTime}ms  
-- 오류율: ${(metricsData.performance?.errorRate * 100).toFixed(1)}%
-- 처리량: ${metricsData.performance?.throughputPerHour}/시간
-
-📈 사용량 통계:
-- 총 대화수: ${metricsData.usage?.totalConversations}
-- 평균 메시지/대화: ${metricsData.usage?.avgMessagesPerConversation}
-- 총 토큰 사용량: ${metricsData.usage?.totalTokensUsed}
-
-📋 품질 지표:
-- 평균 품질점수: ${metricsData.quality?.avgQualityScore}/10
-- 사용자 만족도: ${metricsData.quality?.userSatisfactionScore}/10
-- 성공률: ${((metricsData.quality?.successfulInteractions / (metricsData.quality?.successfulInteractions + metricsData.quality?.failedInteractions)) * 100).toFixed(1)}%
-
-💡 주요 인사이트:
-${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.description}`).join('\n')}
-
-데이터 분석을 통한 의미있는 인사이트와 실행 가능한 개선 제안을 제공해주세요.`;
-        }
-
-        response = await chatService.sendMessageWithSystemPrompt(
-          {
-            message: userMessage,
-            conversationId: conversationId.value,
-            userId: "user-" + Date.now(),
-          },
-          systemPrompt
-        );
-      } catch (metricsError) {
-        console.warn("메트릭 데이터 로드 실패:", metricsError);
-        addMessage(
-          t('message.chatbot.messages.metrics-error'),
-          "assistant"
-        );
-        showTopicButtonsAfterResponse();
-        isLoading.value = false;
-        return;
-      }
-    } else {
-      // 주제 범위를 벗어난 질문에 대한 안내
-      addMessage(
-        t('message.chatbot.messages.scope-limited'),
-        "assistant"
-      );
-      showTopicButtonsAfterResponse();
-      isLoading.value = false;
-      return;
-    }
+    
+    response = await chatApi.sendMessage({
+      message: userMessage,
+      conversationId: conversationId.value,
+      userId: generateUUID(),
+    });
 
     if (response.conversationId) {
       conversationId.value = response.conversationId;
