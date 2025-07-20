@@ -63,7 +63,10 @@
           </div>
         </div>
 
-        <div class="topic-buttons" v-if="messages.length <= 1">
+        <div class="topic-buttons" v-if="showTopicButtons">
+          <div class="topic-header" v-if="messages.length > 1">
+            <span class="topic-header-text">💬 새로운 주제를 선택하거나 계속 대화하세요</span>
+          </div>
           <div class="topic-grid">
             <button
               v-for="topic in quickTopics"
@@ -76,6 +79,15 @@
             >
               <span class="topic-icon">{{ topic.icon }}</span>
               <span class="topic-text">{{ topic.text }}</span>
+            </button>
+          </div>
+          <div class="topic-actions" v-if="messages.length > 1">
+            <button
+              @click="hideTopicButtons"
+              class="continue-chat-button"
+              data-testid="continue-chat-button"
+            >
+              💬 현재 주제로 계속 대화하기
             </button>
           </div>
         </div>
@@ -177,6 +189,7 @@ const messages = ref<ChatMessage[]>([]);
 const messagesContainer = ref<HTMLElement>();
 const messageInput = ref<HTMLTextAreaElement>();
 const conversationId = ref<string>();
+const showTopicButtons = ref(true);
 
 /* ==========================================================================
    Quick Topics Configuration
@@ -267,6 +280,9 @@ const sendMessage = async () => {
 
   const userMessage = currentMessage.value.trim();
   currentMessage.value = "";
+  
+  // 사용자 메시지 전송 시 주제 버튼 숨기기
+  showTopicButtons.value = false;
 
   addMessage(userMessage, "user");
   isLoading.value = true;
@@ -358,6 +374,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
           t('message.chatbot.messages.metrics-error'),
           "assistant"
         );
+        showTopicButtonsAfterResponse();
         isLoading.value = false;
         return;
       }
@@ -367,6 +384,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
         t('message.chatbot.messages.scope-limited'),
         "assistant"
       );
+      showTopicButtonsAfterResponse();
       isLoading.value = false;
       return;
     }
@@ -377,6 +395,9 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
 
     addMessage(response.content, "assistant");
     emit('response-received', response);
+    
+    // 응답 후 주제 버튼 다시 표시
+    showTopicButtonsAfterResponse();
   } catch (error) {
     console.error("Chat error:", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -384,6 +405,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
       t('message.chatbot.messages.error'),
       "assistant"
     );
+    showTopicButtonsAfterResponse();
     emit('error', error instanceof Error ? error : new Error(errorMessage));
   } finally {
     isLoading.value = false;
@@ -395,9 +417,21 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
    ========================================================================== */
 const selectTopic = (topic: QuickTopic) => {
   currentMessage.value = topic.message;
+  showTopicButtons.value = false; // 주제 선택 후 버튼 숨기기
   nextTick(() => {
     sendMessage();
   });
+};
+
+const hideTopicButtons = () => {
+  showTopicButtons.value = false;
+};
+
+const showTopicButtonsAfterResponse = () => {
+  // 응답 후 잠시 기다렸다가 주제 버튼 다시 표시
+  setTimeout(() => {
+    showTopicButtons.value = true;
+  }, 1000);
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
@@ -645,6 +679,17 @@ onMounted(() => {
   background: #f8f9fa;
 }
 
+.topic-header {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.topic-header-text {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
 .topic-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -688,6 +733,29 @@ onMounted(() => {
   font-weight: 500;
   text-align: center;
   line-height: 1.3;
+}
+
+.topic-actions {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.continue-chat-button {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.continue-chat-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
 /* ==========================================================================
