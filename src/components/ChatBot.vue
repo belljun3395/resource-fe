@@ -144,7 +144,7 @@
    ========================================================================== */
 import { ref, nextTick, onMounted, computed, withDefaults } from "vue";
 import { useI18n } from "vue-i18n";
-import { chatApi } from "@/api/chat";
+import { getChatApi } from "@/api/chat";
 import { useUserStore } from "@/store/userStore";
 import type { ChatMessage, QuickTopic } from "@/types/chatbot";
 
@@ -303,7 +303,7 @@ const sendMessage = async () => {
   try {
     let response;
 
-    response = await chatApi.sendMessage({
+    response = await (await getChatApi()).sendMessage({
       message: userMessage,
       conversationId: conversationId.value,
       userId: generateUUID(),

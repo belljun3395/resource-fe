@@ -82,3 +82,17 @@ export interface ErrorResponse {
   /** 에러 발생 경로 */
   path: string;
 }
+
+/**
+ * 건강상태 체크 응답 인터페이스
+ */
+export interface HealthResponse {
+  /** 서비스 상태 */
+  status: string;
+  /** 서비스 이름 */
+  service: string;
+  /** 타임스탬프 */
+  timestamp: number;
+  /** 활성 대화 수 */
+  activeConversations: number;
+}

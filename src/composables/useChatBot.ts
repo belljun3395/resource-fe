@@ -9,7 +9,7 @@
    ========================================================================== */
 import { ref, computed, nextTick, type Ref, type ComputedRef } from "vue";
 import { useI18n } from "vue-i18n";
-import { chatApi } from "@/api/chat";
+import { getChatApi } from "@/api/chat";
 import type { ChatMessage, QuickTopic } from "@/types/chatbot";
 
 /* ==========================================================================
@@ -179,7 +179,7 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
     isLoading.value = true;
 
     try {
-      const response = await chatApi.sendMessage({
+      const response = await (await getChatApi()).sendMessage({
         message: userMessage,
         conversationId: conversationId.value,
         userId: generateUUID(),
