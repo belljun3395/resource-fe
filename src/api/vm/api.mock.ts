@@ -142,7 +142,7 @@ const mockGetInstanceList = async (
   console.log(`🔧 [Mock] Fetching VM instance list:`, params);
 
   const allInstances = createMockVmInstanceList(15);
-  let filteredInstances = allInstances;
+  const filteredInstances = allInstances;
 
   const startIndex = params.page * params.size;
   const endIndex = startIndex + params.size;

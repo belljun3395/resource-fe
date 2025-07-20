@@ -33,3 +33,13 @@ export interface MenuClickEvent {
   item: any;
   domEvent: Event;
 }
+
+/**
+ * ChatBot 컴포넌트 관련 타입들을 re-export
+ */
+export type {
+  ChatBotProps,
+  ChatBotEmits,
+  ChatMessage,
+  QuickTopic,
+} from "./chatbot";

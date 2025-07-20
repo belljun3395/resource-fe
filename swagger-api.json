@@ -1,0 +1,1250 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Spring AI MCP 챗봇 API",
+    "description": "Spring AI 프레임워크를 활용한 AI 에이전트 서비스 API입니다. MCP(Model Context Protocol)를 통한 외부 도구 연동과 메트릭 수집 기능을 제공합니다.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "AI MCP Support",
+      "email": "support@okestro.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "로컬 개발 서버"
+    },
+    {
+      "url": "https://api.mcp.okestro.com",
+      "description": "운영 서버"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Agent",
+      "description": "AI 에이전트 채팅 API"
+    },
+    {
+      "name": "Metrics",
+      "description": "메트릭 수집 및 분석 API"
+    }
+  ],
+  "paths": {
+    "/api/v1/agent/chat": {
+      "post": {
+        "tags": ["Agent"],
+        "summary": "기본 채팅",
+        "description": "사용자의 채팅 메시지를 처리하고 AI 에이전트의 응답을 반환합니다.",
+        "operationId": "chat",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              },
+              "examples": {
+                "simple": {
+                  "summary": "간단한 채팅",
+                  "value": {
+                    "message": "안녕하세요! 서버 상태를 확인해주세요.",
+                    "userId": "user123"
+                  }
+                },
+                "with_conversation": {
+                  "summary": "기존 대화 이어가기",
+                  "value": {
+                    "message": "이전에 말한 내용을 정리해주세요.",
+                    "userId": "user123",
+                    "conversationId": "conv-456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "성공 응답",
+                    "value": {
+                      "content": "안녕하세요! 현재 서버 상태를 확인했습니다. 모든 시스템이 정상적으로 작동 중입니다.",
+                      "conversationId": "conv-123",
+                      "timestamp": "2024-01-15T10:30:00",
+                      "isStreaming": false,
+                      "sources": [],
+                      "metadata": {
+                        "responseTime": "250ms",
+                        "toolsUsed": ["server_status"]
+                      },
+                      "status": "SUCCESS"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/chat/stream": {
+      "get": {
+        "tags": ["Agent"],
+        "summary": "스트리밍 채팅",
+        "description": "Server-Sent Events(SSE)를 통해 실시간으로 AI 응답을 스트리밍합니다.",
+        "operationId": "streamChat",
+        "parameters": [
+          {
+            "name": "message",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 10000
+            },
+            "description": "사용자 메시지",
+            "example": "긴 작업을 수행해주세요."
+          },
+          {
+            "name": "conversationId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "대화 ID (선택사항)",
+            "example": "conv-123"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)",
+            "example": "user123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "스트리밍 응답",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-Sent Events 스트림"
+                },
+                "example": "data: {\"content\":\"처리 중입니다...\",\"conversationId\":\"conv-123\",\"status\":\"PROCESSING\"}\n\ndata: {\"content\":\"작업이 완료되었습니다.\",\"conversationId\":\"conv-123\",\"status\":\"SUCCESS\"}\n\n"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/chat/system": {
+      "post": {
+        "tags": ["Agent"],
+        "summary": "시스템 프롬프트 채팅",
+        "description": "특정 시스템 프롬프트와 함께 채팅 메시지를 처리합니다.",
+        "operationId": "chatWithSystemPrompt",
+        "parameters": [
+          {
+            "name": "systemPrompt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "description": "AI 모델에 전달할 시스템 프롬프트",
+            "example": "You are a helpful server administrator"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/conversations": {
+      "get": {
+        "tags": ["Agent"],
+        "summary": "대화 목록 조회",
+        "description": "사용자의 대화 목록을 조회합니다.",
+        "operationId": "getConversations",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)",
+            "example": "user123"
+          },
+          {
+            "name": "activeOnly",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "description": "활성 대화만 조회 여부",
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "대화 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conversation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/conversations/{conversationId}": {
+      "delete": {
+        "tags": ["Agent"],
+        "summary": "대화 삭제",
+        "description": "지정된 대화를 삭제합니다.",
+        "operationId": "deleteConversation",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "삭제할 대화 ID",
+            "example": "conv-123"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)",
+            "example": "user123"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "성공적으로 삭제됨"
+          },
+          "404": {
+            "description": "대화를 찾을 수 없음"
+          }
+        }
+      }
+    },
+    "/api/v1/agent/health": {
+      "get": {
+        "tags": ["Agent"],
+        "summary": "서비스 상태 확인",
+        "description": "에이전트 서비스의 건강 상태를 확인합니다.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "서비스 상태 정보",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "UP"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "AI Agent"
+                    },
+                    "timestamp": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1642248600000
+                    },
+                    "activeConversations": {
+                      "type": "integer",
+                      "example": 25
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/dashboard": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "메트릭 대시보드",
+        "description": "사용자별 또는 전체 메트릭 대시보드를 조회합니다.",
+        "operationId": "getDashboard",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)",
+            "example": "user123"
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 24
+            },
+            "description": "조회할 시간 범위 (시간 단위)",
+            "example": 24
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "메트릭 대시보드 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricsAnalysisResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/performance": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "성능 메트릭",
+        "description": "시스템 성능 관련 메트릭을 조회합니다.",
+        "operationId": "getPerformanceMetrics",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "시작 시간 (ISO 8601)",
+            "example": "2024-01-15T00:00:00"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "종료 시간 (ISO 8601)",
+            "example": "2024-01-16T00:00:00"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성능 메트릭 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/usage": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "사용량 메트릭",
+        "description": "사용자 행동 및 사용량 메트릭을 조회합니다.",
+        "operationId": "getUsageMetrics",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "조회할 일수",
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "사용량 메트릭 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/quality": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "품질 메트릭",
+        "description": "서비스 품질 관련 메트릭을 조회합니다.",
+        "operationId": "getQualityMetrics",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "조회할 일수",
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "품질 메트릭 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/query": {
+      "post": {
+        "tags": ["Metrics"],
+        "summary": "커스텀 메트릭 쿼리",
+        "description": "사용자 정의 조건으로 메트릭을 쿼리합니다.",
+        "operationId": "queryMetrics",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetricsQueryRequest"
+              },
+              "examples": {
+                "performance_query": {
+                  "summary": "성능 메트릭 쿼리",
+                  "value": {
+                    "metricName": "api.response_time",
+                    "metricType": "PERFORMANCE",
+                    "startTime": "2024-01-14T00:00:00",
+                    "endTime": "2024-01-15T00:00:00",
+                    "aggregation": "avg",
+                    "limit": 100
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "쿼리 결과",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/insights": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "인사이트 분석",
+        "description": "AI 기반 메트릭 인사이트를 생성합니다.",
+        "operationId": "getInsights",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "사용자 ID (선택사항)"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "분석할 일수",
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "인사이트 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/realtime": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "실시간 메트릭",
+        "description": "현재 실시간 시스템 메트릭을 조회합니다.",
+        "operationId": "getRealtimeMetrics",
+        "responses": {
+          "200": {
+            "description": "실시간 메트릭 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/top-users": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "상위 사용자",
+        "description": "활성도가 높은 상위 사용자들을 조회합니다.",
+        "operationId": "getTopUsers",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            },
+            "description": "분석할 일수",
+            "example": 7
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "조회할 사용자 수",
+            "example": 10
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "상위 사용자 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/system": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "시스템 메트릭",
+        "description": "시스템 리소스 사용량 및 상태를 조회합니다.",
+        "operationId": "getSystemMetrics",
+        "responses": {
+          "200": {
+            "description": "시스템 메트릭 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/trends": {
+      "get": {
+        "tags": ["Metrics"],
+        "summary": "트렌드 분석",
+        "description": "특정 메트릭의 시간별 트렌드를 분석합니다.",
+        "operationId": "getTrends",
+        "parameters": [
+          {
+            "name": "metricName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "분석할 메트릭 이름",
+            "example": "api.response_time"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30
+            },
+            "description": "분석할 일수",
+            "example": 30
+          },
+          {
+            "name": "granularity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["hourly", "daily", "weekly"],
+              "default": "daily"
+            },
+            "description": "데이터 세분화 수준",
+            "example": "daily"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "트렌드 분석 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChatRequest": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000,
+            "description": "사용자 메시지",
+            "example": "안녕하세요! 서버 상태를 확인해주세요."
+          },
+          "conversationId": {
+            "type": "string",
+            "description": "대화 ID (선택사항)",
+            "example": "conv-123"
+          },
+          "userId": {
+            "type": "string",
+            "description": "사용자 ID",
+            "example": "user123"
+          },
+          "userAgent": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "사용자 에이전트",
+            "example": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+          },
+          "systemPrompt": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "시스템 프롬프트",
+            "example": "You are a helpful assistant"
+          },
+          "functions": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string"
+            },
+            "description": "사용할 함수 목록",
+            "example": ["server_status", "log_analysis"]
+          }
+        }
+      },
+      "ChatResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "응답 내용",
+            "example": "안녕하세요! 현재 서버 상태를 확인했습니다."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "응답 생성 시간",
+            "example": "2024-01-15T10:30:00"
+          },
+          "status": {
+            "type": "string",
+            "description": "응답 상태",
+            "example": "success"
+          }
+        }
+      },
+      "AgentResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "AI 응답 내용",
+            "example": "현재 서버 상태를 확인했습니다. 모든 시스템이 정상적으로 작동 중입니다."
+          },
+          "conversationId": {
+            "type": "string",
+            "description": "대화 ID",
+            "example": "conv-123"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "응답 생성 시간",
+            "example": "2024-01-15T10:30:00"
+          },
+          "isStreaming": {
+            "type": "boolean",
+            "description": "스트리밍 응답 여부",
+            "example": false
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "참조 소스 목록",
+            "example": []
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "메타데이터",
+            "example": {
+              "responseTime": "250ms",
+              "toolsUsed": ["server_status"]
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": ["SUCCESS", "ERROR", "PROCESSING"],
+            "description": "응답 상태",
+            "example": "SUCCESS"
+          }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "대화 ID",
+            "example": "conv-123"
+          },
+          "userId": {
+            "type": "string",
+            "description": "사용자 ID",
+            "example": "user123"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "대화 제목",
+            "example": "서버 상태 확인"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "대화 요약",
+            "example": "사용자가 서버 상태를 확인하고 모니터링 설정에 대해 문의함"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "생성 시간",
+            "example": "2024-01-15T09:00:00"
+          },
+          "lastActivity": {
+            "type": "string",
+            "format": "date-time",
+            "description": "마지막 활동 시간",
+            "example": "2024-01-15T10:30:00"
+          },
+          "messageCount": {
+            "type": "integer",
+            "description": "메시지 수",
+            "example": 5
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "활성 상태",
+            "example": true
+          }
+        }
+      },
+      "MetricsQueryRequest": {
+        "type": "object",
+        "required": ["metricName"],
+        "properties": {
+          "metricName": {
+            "type": "string",
+            "description": "메트릭 이름",
+            "example": "api.response_time"
+          },
+          "metricType": {
+            "type": "string",
+            "enum": ["PERFORMANCE", "USAGE", "QUALITY", "ERROR", "SYSTEM"],
+            "description": "메트릭 타입",
+            "example": "PERFORMANCE"
+          },
+          "userId": {
+            "type": "string",
+            "description": "사용자 ID",
+            "example": "user123"
+          },
+          "conversationId": {
+            "type": "string",
+            "description": "대화 ID",
+            "example": "conv-123"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "시작 시간",
+            "example": "2024-01-14T00:00:00"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "종료 시간",
+            "example": "2024-01-15T00:00:00"
+          },
+          "groupBy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "그룹화 필드",
+            "example": ["userId", "hour"]
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "필터 조건",
+            "example": {
+              "status": "SUCCESS"
+            }
+          },
+          "aggregation": {
+            "type": "string",
+            "description": "집계 방법",
+            "default": "count",
+            "example": "avg"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "결과 제한 수",
+            "default": 100,
+            "example": 100
+          }
+        }
+      },
+      "MetricsAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "사용자 ID",
+            "example": "user123"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "생성 시간",
+            "example": "2024-01-15T10:30:00"
+          },
+          "timeRange": {
+            "type": "string",
+            "description": "분석 시간 범위",
+            "example": "24 hours"
+          },
+          "performance": {
+            "$ref": "#/components/schemas/PerformanceStats"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageStats"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/QualityStats"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insight"
+            }
+          },
+          "rawData": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "원시 데이터"
+          }
+        }
+      },
+      "PerformanceStats": {
+        "type": "object",
+        "properties": {
+          "avgResponseTime": {
+            "type": "number",
+            "format": "double",
+            "description": "평균 응답 시간 (ms)",
+            "example": 250.5
+          },
+          "p95ResponseTime": {
+            "type": "number",
+            "format": "double",
+            "description": "95퍼센타일 응답 시간 (ms)",
+            "example": 850.2
+          },
+          "errorRate": {
+            "type": "number",
+            "format": "double",
+            "description": "오류율",
+            "example": 0.02
+          },
+          "totalRequests": {
+            "type": "integer",
+            "format": "int64",
+            "description": "총 요청 수",
+            "example": 1205
+          },
+          "throughputPerHour": {
+            "type": "number",
+            "format": "double",
+            "description": "시간당 처리량",
+            "example": 50.2
+          }
+        }
+      },
+      "UsageStats": {
+        "type": "object",
+        "properties": {
+          "totalConversations": {
+            "type": "integer",
+            "format": "int64",
+            "description": "총 대화 수",
+            "example": 45
+          },
+          "avgMessagesPerConversation": {
+            "type": "number",
+            "format": "double",
+            "description": "대화당 평균 메시지 수",
+            "example": 8.5
+          },
+          "avgMessageLength": {
+            "type": "number",
+            "format": "double",
+            "description": "평균 메시지 길이",
+            "example": 125.3
+          },
+          "totalTokensUsed": {
+            "type": "integer",
+            "format": "int64",
+            "description": "총 사용 토큰 수",
+            "example": 15420
+          },
+          "featureUsage": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "기능별 사용량",
+            "example": {
+              "chat": 850,
+              "streaming": 245,
+              "systemPrompt": 110
+            }
+          },
+          "timeDistribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "시간대별 분포",
+            "example": {
+              "morning": 30.5,
+              "afternoon": 45.2,
+              "evening": 24.3
+            }
+          }
+        }
+      },
+      "QualityStats": {
+        "type": "object",
+        "properties": {
+          "avgQualityScore": {
+            "type": "number",
+            "format": "double",
+            "description": "평균 품질 점수",
+            "example": 8.5
+          },
+          "userSatisfactionScore": {
+            "type": "number",
+            "format": "double",
+            "description": "사용자 만족도 점수",
+            "example": 9.2
+          },
+          "successfulInteractions": {
+            "type": "integer",
+            "format": "int64",
+            "description": "성공적인 상호작용 수",
+            "example": 1180
+          },
+          "failedInteractions": {
+            "type": "integer",
+            "format": "int64",
+            "description": "실패한 상호작용 수",
+            "example": 25
+          },
+          "qualityByFeature": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "기능별 품질 점수",
+            "example": {
+              "chat": 8.7,
+              "streaming": 8.2,
+              "systemPrompt": 9.1
+            }
+          }
+        }
+      },
+      "Insight": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "인사이트 타입",
+            "example": "performance"
+          },
+          "title": {
+            "type": "string",
+            "description": "인사이트 제목",
+            "example": "응답 시간 최적화 필요"
+          },
+          "description": {
+            "type": "string",
+            "description": "인사이트 설명",
+            "example": "피크 시간대 응답 시간이 평균보다 40% 높음"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warning", "critical"],
+            "description": "심각도 수준",
+            "example": "warning"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "관련 데이터"
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "개선 권장사항",
+            "example": "캐싱 전략 검토 및 인프라 스케일링 고려"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "오류 메시지",
+            "example": "Invalid request parameters"
+          },
+          "code": {
+            "type": "string",
+            "description": "오류 코드",
+            "example": "VALIDATION_ERROR"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "오류 발생 시간",
+            "example": "2024-01-15T10:30:00"
+          },
+          "path": {
+            "type": "string",
+            "description": "오류 발생 경로",
+            "example": "/api/v1/agent/chat"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Bearer 토큰"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API 키"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    },
+    {
+      "ApiKeyAuth": []
+    }
+  ]
+}

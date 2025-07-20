@@ -8,11 +8,13 @@
     <a-layout>
       <router-view />
     </a-layout>
+    <ChatBot />
   </main>
 </template>
 
 <script setup lang="ts">
 import AppHeader from "@/components/AppHeader.vue";
+import ChatBot from "@/components/ChatBot.vue";
 import { useUserStore } from "@/store/userStore";
 
 const userStore = useUserStore();
