@@ -13,13 +13,13 @@
       <div class="chatbot-header">
         <div class="chatbot-title">
           <span class="chatbot-icon">🤖</span>
-          <span>{{ t('chatbot.title') }}</span>
+          <span>{{ t('message.chatbot.title') }}</span>
         </div>
         <div class="chatbot-controls">
           <button 
             @click="toggleExpand" 
             class="control-button"
-            :aria-label="isExpanded ? t('chatbot.collapse') : t('chatbot.expand')"
+            :aria-label="isExpanded ? t('message.chatbot.collapse') : t('message.chatbot.expand')"
             data-testid="toggle-expand-button"
           >
             {{ isExpanded ? "−" : "+" }}
@@ -27,7 +27,7 @@
           <button 
             @click="closeChatbot" 
             class="control-button"
-            :aria-label="t('chatbot.close')"
+            :aria-label="t('message.chatbot.close')"
             data-testid="close-button"
           >
             ×
@@ -71,7 +71,7 @@
               @click="selectTopic(topic)"
               class="topic-button"
               :disabled="isLoading"
-              :aria-label="t('chatbot.select-topic', { topic: topic.text })"
+              :aria-label="t('message.chatbot.select-topic', { topic: topic.text })"
               :data-testid="`topic-${topic.id}`"
             >
               <span class="topic-icon">{{ topic.icon }}</span>
@@ -85,18 +85,18 @@
             <textarea
               v-model="currentMessage"
               @keydown="handleKeydown"
-              :placeholder="t('chatbot.input-placeholder')"
+              :placeholder="t('message.chatbot.input-placeholder')"
               class="message-input"
               rows="1"
               ref="messageInput"
-              :aria-label="t('chatbot.input-label')"
+              :aria-label="t('message.chatbot.input-label')"
               data-testid="message-input"
             ></textarea>
             <button
               @click="sendMessage"
               :disabled="!currentMessage.trim() || isLoading"
               class="send-button"
-              :aria-label="t('chatbot.send')"
+              :aria-label="t('message.chatbot.send')"
               data-testid="send-button"
             >
               ↗
@@ -110,7 +110,7 @@
       v-if="!isOpen" 
       @click="openChatbot" 
       class="chatbot-toggle"
-      :aria-label="t('chatbot.open')"
+      :aria-label="t('message.chatbot.open')"
       data-testid="chatbot-toggle"
     >
       <span class="toggle-icon">💬</span>
@@ -185,14 +185,14 @@ const defaultQuickTopics: QuickTopic[] = [
   {
     id: "dashboard",
     icon: "📊",
-    text: t('chatbot.topics.dashboard'),
-    message: t('chatbot.messages.dashboard-request')
+    text: t('message.chatbot.topics.dashboard'),
+    message: t('message.chatbot.messages.dashboard-request')
   },
   {
     id: "insights",
     icon: "💡",
-    text: t('chatbot.topics.insights'),
-    message: t('chatbot.messages.insights-request')
+    text: t('message.chatbot.topics.insights'),
+    message: t('message.chatbot.messages.insights-request')
   }
 ];
 
@@ -355,7 +355,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
       } catch (metricsError) {
         console.warn("메트릭 데이터 로드 실패:", metricsError);
         addMessage(
-          t('chatbot.messages.metrics-error'),
+          t('message.chatbot.messages.metrics-error'),
           "assistant"
         );
         isLoading.value = false;
@@ -364,7 +364,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
     } else {
       // 주제 범위를 벗어난 질문에 대한 안내
       addMessage(
-        t('chatbot.messages.scope-limited'),
+        t('message.chatbot.messages.scope-limited'),
         "assistant"
       );
       isLoading.value = false;
@@ -381,7 +381,7 @@ ${metricsData.insights?.map(insight => `- ${insight.title}: ${insight.descriptio
     console.error("Chat error:", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     addMessage(
-      t('chatbot.messages.error'),
+      t('message.chatbot.messages.error'),
       "assistant"
     );
     emit('error', error instanceof Error ? error : new Error(errorMessage));
@@ -419,7 +419,7 @@ const formatTime = (timestamp: Date) => {
    ========================================================================== */
 onMounted(() => {
   addMessage(
-    t('chatbot.messages.welcome'),
+    t('message.chatbot.messages.welcome'),
     "assistant"
   );
 });
