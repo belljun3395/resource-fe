@@ -69,7 +69,6 @@ export interface Conversation {
   isActive: boolean;
 }
 
-
 /**
  * 에러 응답 인터페이스
  */

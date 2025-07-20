@@ -1,7 +1,7 @@
 <template>
-  <div 
-    class="chatbot-container" 
-    v-if="isLoggedIn" 
+  <div
+    class="chatbot-container"
+    v-if="isLoggedIn"
     data-testid="chatbot-container"
   >
     <div
@@ -13,19 +13,23 @@
       <div class="chatbot-header">
         <div class="chatbot-title">
           <span class="chatbot-icon">🤖</span>
-          <span>{{ t('message.chatbot.title') }}</span>
+          <span>{{ t("message.chatbot.title") }}</span>
         </div>
         <div class="chatbot-controls">
-          <button 
-            @click="toggleExpand" 
+          <button
+            @click="toggleExpand"
             class="control-button"
-            :aria-label="isExpanded ? t('message.chatbot.collapse') : t('message.chatbot.expand')"
+            :aria-label="
+              isExpanded
+                ? t('message.chatbot.collapse')
+                : t('message.chatbot.expand')
+            "
             data-testid="toggle-expand-button"
           >
             {{ isExpanded ? "−" : "+" }}
           </button>
-          <button 
-            @click="closeChatbot" 
+          <button
+            @click="closeChatbot"
             class="control-button"
             :aria-label="t('message.chatbot.close')"
             data-testid="close-button"
@@ -36,8 +40,8 @@
       </div>
 
       <div class="chatbot-body" v-if="isExpanded">
-        <div 
-          class="messages-container" 
+        <div
+          class="messages-container"
           ref="messagesContainer"
           data-testid="messages-container"
         >
@@ -65,7 +69,9 @@
 
         <div class="topic-buttons" v-if="showTopicButtons">
           <div class="topic-header" v-if="messages.length > 1">
-            <span class="topic-header-text">💬 새로운 주제를 선택하거나 계속 대화하세요</span>
+            <span class="topic-header-text"
+              >💬 새로운 주제를 선택하거나 계속 대화하세요</span
+            >
           </div>
           <div class="topic-grid">
             <button
@@ -74,7 +80,9 @@
               @click="selectTopic(topic)"
               class="topic-button"
               :disabled="isLoading"
-              :aria-label="t('message.chatbot.select-topic', { topic: topic.text })"
+              :aria-label="
+                t('message.chatbot.select-topic', { topic: topic.text })
+              "
               :data-testid="`topic-${topic.id}`"
             >
               <span class="topic-icon">{{ topic.icon }}</span>
@@ -118,9 +126,9 @@
       </div>
     </div>
 
-    <button 
-      v-if="!isOpen" 
-      @click="openChatbot" 
+    <button
+      v-if="!isOpen"
+      @click="openChatbot"
       class="chatbot-toggle"
       :aria-label="t('message.chatbot.open')"
       data-testid="chatbot-toggle"
@@ -160,13 +168,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 interface Emits {
   /** 챗봇 열림/닫힘 상태 변경 */
-  (e: 'toggle', isOpen: boolean): void;
+  (e: "toggle", isOpen: boolean): void;
   /** 메시지 전송 */
-  (e: 'message-sent', message: ChatMessage): void;
+  (e: "message-sent", message: ChatMessage): void;
   /** 응답 수신 */
-  (e: 'response-received', response: any): void;
+  (e: "response-received", response: any): void;
   /** 에러 발생 */
-  (e: 'error', error: Error): void;
+  (e: "error", error: Error): void;
 }
 
 const emit = defineEmits<Emits>();
@@ -195,9 +203,9 @@ const showTopicButtons = ref(true);
    Utility Functions
    ========================================================================== */
 const generateUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 };
@@ -210,8 +218,8 @@ const defaultQuickTopics: QuickTopic[] = [
     id: "general",
     icon: "💬",
     text: "일반 질문",
-    message: "안녕하세요! 무엇을 도와드릴까요?"
-  }
+    message: "안녕하세요! 무엇을 도와드릴까요?",
+  },
 ];
 
 const quickTopics = computed(() => props.customTopics || defaultQuickTopics);
@@ -222,7 +230,7 @@ const quickTopics = computed(() => props.customTopics || defaultQuickTopics);
 const openChatbot = () => {
   isOpen.value = true;
   isExpanded.value = true;
-  emit('toggle', true);
+  emit("toggle", true);
   nextTick(() => {
     messageInput.value?.focus();
   });
@@ -231,7 +239,7 @@ const openChatbot = () => {
 const closeChatbot = () => {
   isOpen.value = false;
   isExpanded.value = false;
-  emit('toggle', false);
+  emit("toggle", false);
 };
 
 const toggleExpand = () => {
@@ -253,19 +261,19 @@ const addMessage = (content: string, type: "user" | "assistant") => {
     content,
     timestamp: new Date(),
   };
-  
+
   // 최대 메시지 수 제한
   if (messages.value.length >= props.maxMessages) {
     messages.value.shift(); // 가장 오래된 메시지 제거
   }
-  
+
   messages.value.push(message);
-  
+
   // 이벤트 발생
-  if (type === 'user') {
-    emit('message-sent', message);
+  if (type === "user") {
+    emit("message-sent", message);
   }
-  
+
   scrollToBottom();
 };
 
@@ -285,7 +293,7 @@ const sendMessage = async () => {
 
   const userMessage = currentMessage.value.trim();
   currentMessage.value = "";
-  
+
   // 사용자 메시지 전송 시 주제 버튼 숨기기
   showTopicButtons.value = false;
 
@@ -294,7 +302,7 @@ const sendMessage = async () => {
 
   try {
     let response;
-    
+
     response = await chatApi.sendMessage({
       message: userMessage,
       conversationId: conversationId.value,
@@ -306,19 +314,17 @@ const sendMessage = async () => {
     }
 
     addMessage(response.content, "assistant");
-    emit('response-received', response);
-    
+    emit("response-received", response);
+
     // 응답 후 주제 버튼 다시 표시
     showTopicButtonsAfterResponse();
   } catch (error) {
     console.error("Chat error:", error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    addMessage(
-      t('message.chatbot.messages.error'),
-      "assistant"
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    addMessage(t("message.chatbot.messages.error"), "assistant");
     showTopicButtonsAfterResponse();
-    emit('error', error instanceof Error ? error : new Error(errorMessage));
+    emit("error", error instanceof Error ? error : new Error(errorMessage));
   } finally {
     isLoading.value = false;
   }
@@ -364,10 +370,7 @@ const formatTime = (timestamp: Date) => {
    Lifecycle
    ========================================================================== */
 onMounted(() => {
-  addMessage(
-    t('message.chatbot.messages.welcome'),
-    "assistant"
-  );
+  addMessage(t("message.chatbot.messages.welcome"), "assistant");
 });
 </script>
 

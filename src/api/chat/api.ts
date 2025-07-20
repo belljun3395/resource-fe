@@ -6,8 +6,10 @@ import type {
 } from "@/api/chat/dto";
 import mockData from "./api.mock";
 
-const CHAT_API_BASE_URL = import.meta.env.VITE_CHAT_API_URL || "http://localhost:3001";
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true' || import.meta.env.DEV;
+const CHAT_API_BASE_URL =
+  import.meta.env.VITE_CHAT_API_URL || "http://localhost:3001";
+const USE_MOCK =
+  import.meta.env.VITE_USE_MOCK === "true" || import.meta.env.DEV;
 
 /**
  * ChatService 클래스
@@ -62,10 +64,12 @@ class ChatService {
    */
   async sendMessage(request: ChatRequest): Promise<AgentResponse> {
     if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 500 + Math.random() * 1000)
+      );
       return mockData.createMockResponse(request.message);
     }
-    
+
     return this.request<AgentResponse>("/api/v1/agent/chat", {
       method: "POST",
       body: JSON.stringify(request),
@@ -83,12 +87,16 @@ class ChatService {
     systemPrompt: string
   ): Promise<AgentResponse> {
     if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 700 + Math.random() * 1000));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 700 + Math.random() * 1000)
+      );
       return mockData.createMockResponse(request.message);
     }
-    
+
     return this.request<AgentResponse>(
-      `/api/v1/agent/chat/system?systemPrompt=${encodeURIComponent(systemPrompt)}`,
+      `/api/v1/agent/chat/system?systemPrompt=${encodeURIComponent(
+        systemPrompt
+      )}`,
       {
         method: "POST",
         body: JSON.stringify(request),
@@ -123,11 +131,15 @@ class ChatService {
     activeOnly: boolean = true
   ): Promise<Conversation[]> {
     if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 200 + Math.random() * 300)
+      );
       const conversations = mockData.createMockConversations();
-      return activeOnly ? conversations.filter(c => c.isActive) : conversations;
+      return activeOnly
+        ? conversations.filter((c) => c.isActive)
+        : conversations;
     }
-    
+
     const params = new URLSearchParams();
     if (userId) params.append("userId", userId);
     if (activeOnly !== undefined)
@@ -158,13 +170,14 @@ class ChatService {
     activeConversations: number;
   }> {
     if (USE_MOCK) {
-      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 100 + Math.random() * 200)
+      );
       return mockData.health;
     }
-    
+
     return this.request("/api/v1/agent/health");
   }
-
 }
 
 export const chatApi = new ChatService();

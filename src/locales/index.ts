@@ -134,12 +134,16 @@ export const messages = {
           insights: "인사이트 분석",
         },
         messages: {
-          welcome: "안녕하세요! 👋\n\n시스템 분석 전문 AI 어시스턴트입니다. 두 가지 서비스를 제공합니다:\n\n📊 대시보드 요약\n현재 시스템 현황과 핵심 지표를 한눈에 확인\n\n💡 인사이트 분석\n보고서 작성을 위한 심층 데이터 분석\n\n궁금한 내용을 버튼으로 선택하거나 직접 입력해주세요!",
+          welcome:
+            "안녕하세요! 👋\n\n시스템 분석 전문 AI 어시스턴트입니다. 두 가지 서비스를 제공합니다:\n\n📊 대시보드 요약\n현재 시스템 현황과 핵심 지표를 한눈에 확인\n\n💡 인사이트 분석\n보고서 작성을 위한 심층 데이터 분석\n\n궁금한 내용을 버튼으로 선택하거나 직접 입력해주세요!",
           "dashboard-request": "현재 시스템 대시보드 전체 요약을 보여주세요",
-          "insights-request": "보고서를 위한 주요 인사이트와 분석 내용을 정리해주세요",
+          "insights-request":
+            "보고서를 위한 주요 인사이트와 분석 내용을 정리해주세요",
           error: "죄송합니다. 오류가 발생했습니다. 다시 시도해 주세요.",
-          "scope-limited": "죄송합니다. 저는 **대시보드 요약**과 **인사이트 분석** 두 가지만 도와드릴 수 있습니다.\n\n📊 **대시보드 질문 예시:**\n• 현재 시스템 현황은?\n• 대시보드 요약 보여줘\n• 핵심 지표 상태는?\n\n💡 **인사이트 질문 예시:**\n• 보고서용 인사이트 분석해줘\n• 개선 제안사항은?\n• 데이터 분석 결과는?",
-          "metrics-error": "죄송합니다. 현재 메트릭 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.",
+          "scope-limited":
+            "죄송합니다. 저는 **대시보드 요약**과 **인사이트 분석** 두 가지만 도와드릴 수 있습니다.\n\n📊 **대시보드 질문 예시:**\n• 현재 시스템 현황은?\n• 대시보드 요약 보여줘\n• 핵심 지표 상태는?\n\n💡 **인사이트 질문 예시:**\n• 보고서용 인사이트 분석해줘\n• 개선 제안사항은?\n• 데이터 분석 결과는?",
+          "metrics-error":
+            "죄송합니다. 현재 메트릭 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.",
         },
       },
     },
@@ -282,12 +286,17 @@ export const messages = {
           insights: "Insights Analysis",
         },
         messages: {
-          welcome: "Hello! 👋\n\nI'm a specialized AI assistant for system analysis. I provide two main services:\n\n📊 Dashboard Summary\nGet an overview of current system status and key metrics at a glance\n\n💡 Insights Analysis\nIn-depth data analysis for report writing\n\nPlease select a topic button or type your question directly!",
-          "dashboard-request": "Please show me a comprehensive summary of the current system dashboard",
-          "insights-request": "Please provide key insights and analysis for reporting purposes",
+          welcome:
+            "Hello! 👋\n\nI'm a specialized AI assistant for system analysis. I provide two main services:\n\n📊 Dashboard Summary\nGet an overview of current system status and key metrics at a glance\n\n💡 Insights Analysis\nIn-depth data analysis for report writing\n\nPlease select a topic button or type your question directly!",
+          "dashboard-request":
+            "Please show me a comprehensive summary of the current system dashboard",
+          "insights-request":
+            "Please provide key insights and analysis for reporting purposes",
           error: "Sorry, an error occurred. Please try again.",
-          "scope-limited": "Sorry, I can only help with **Dashboard Summary** and **Insights Analysis**.\n\n📊 **Dashboard Question Examples:**\n• What's the current system status?\n• Show me the dashboard summary\n• What's the status of key metrics?\n\n💡 **Insights Question Examples:**\n• Analyze insights for reporting\n• What are the improvement suggestions?\n• What are the data analysis results?",
-          "metrics-error": "Sorry, I cannot load the metrics data at the moment. Please try again later.",
+          "scope-limited":
+            "Sorry, I can only help with **Dashboard Summary** and **Insights Analysis**.\n\n📊 **Dashboard Question Examples:**\n• What's the current system status?\n• Show me the dashboard summary\n• What's the status of key metrics?\n\n💡 **Insights Question Examples:**\n• Analyze insights for reporting\n• What are the improvement suggestions?\n• What are the data analysis results?",
+          "metrics-error":
+            "Sorry, I cannot load the metrics data at the moment. Please try again later.",
         },
       },
     },

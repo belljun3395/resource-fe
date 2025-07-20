@@ -7,10 +7,10 @@
 /* ==========================================================================
    Imports
    ========================================================================== */
-import { ref, computed, nextTick, type Ref, type ComputedRef } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { chatService } from '@/services/chatService';
-import type { ChatMessage, QuickTopic } from '@/types/chatbot';
+import { ref, computed, nextTick, type Ref, type ComputedRef } from "vue";
+import { useI18n } from "vue-i18n";
+import { chatApi } from "@/api/chat";
+import type { ChatMessage, QuickTopic } from "@/types/chatbot";
 
 /* ==========================================================================
    Composable Options Interface
@@ -36,19 +36,19 @@ interface UseChatBotReturn {
   messages: Ref<ChatMessage[]>;
   conversationId: Ref<string | undefined>;
   quickTopics: ComputedRef<QuickTopic[]>;
-  
+
   // 액션
   openChatbot: () => void;
   closeChatbot: () => void;
   toggleExpand: () => void;
   sendMessage: () => Promise<void>;
   selectTopic: (topic: QuickTopic) => void;
-  addMessage: (content: string, type: 'user' | 'assistant') => void;
-  
+  addMessage: (content: string, type: "user" | "assistant") => void;
+
   // 유틸리티
   formatTime: (timestamp: Date) => string;
   handleKeydown: (event: KeyboardEvent) => void;
-  
+
   // 이벤트 핸들러
   onToggle: (callback: (isOpen: boolean) => void) => void;
   onMessageSent: (callback: (message: ChatMessage) => void) => void;
@@ -59,13 +59,13 @@ interface UseChatBotReturn {
 /* ==========================================================================
    Default Quick Topics
    ========================================================================== */
-const createDefaultQuickTopics = (t: any): QuickTopic[] => [
+const createDefaultQuickTopics = (): QuickTopic[] => [
   {
     id: "general",
     icon: "💬",
     text: "일반 질문",
-    message: "안녕하세요! 무엇을 도와드릴까요?"
-  }
+    message: "안녕하세요! 무엇을 도와드릴까요?",
+  },
 ];
 
 /* ==========================================================================
@@ -77,11 +77,7 @@ const createDefaultQuickTopics = (t: any): QuickTopic[] => [
  * @returns 챗봇 상태와 액션
  */
 export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
-  const {
-    maxMessages = 100,
-    initialOpen = false,
-    customTopics
-  } = options;
+  const { maxMessages = 100, initialOpen = false, customTopics } = options;
 
   /* ==========================================================================
      I18n
@@ -94,7 +90,7 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
   const isOpen = ref(initialOpen);
   const isExpanded = ref(false);
   const isLoading = ref(false);
-  const currentMessage = ref('');
+  const currentMessage = ref("");
   const messages = ref<ChatMessage[]>([]);
   const conversationId = ref<string>();
 
@@ -102,11 +98,14 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
      Utility Functions  
      ========================================================================== */
   const generateUUID = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
   };
 
   /* ==========================================================================
@@ -120,8 +119,8 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
   /* ==========================================================================
      Computed Properties
      ========================================================================== */
-  const quickTopics = computed(() => 
-    customTopics || createDefaultQuickTopics(t)
+  const quickTopics = computed(
+    () => customTopics || createDefaultQuickTopics()
   );
 
   /* ==========================================================================
@@ -146,23 +145,23 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
   /* ==========================================================================
      Message Management
      ========================================================================== */
-  const addMessage = (content: string, type: 'user' | 'assistant') => {
+  const addMessage = (content: string, type: "user" | "assistant") => {
     const message: ChatMessage = {
       id: Date.now().toString(),
       type,
       content,
       timestamp: new Date(),
     };
-    
+
     // 최대 메시지 수 제한
     if (messages.value.length >= maxMessages) {
       messages.value.shift(); // 가장 오래된 메시지 제거
     }
-    
+
     messages.value.push(message);
-    
+
     // 이벤트 발생
-    if (type === 'user') {
+    if (type === "user") {
       emitMessageSent(message);
     }
   };
@@ -174,13 +173,13 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
     if (!currentMessage.value.trim() || isLoading.value) return;
 
     const userMessage = currentMessage.value.trim();
-    currentMessage.value = '';
+    currentMessage.value = "";
 
-    addMessage(userMessage, 'user');
+    addMessage(userMessage, "user");
     isLoading.value = true;
 
     try {
-      const response = await chatService.sendMessage({
+      const response = await chatApi.sendMessage({
         message: userMessage,
         conversationId: conversationId.value,
         userId: generateUUID(),
@@ -190,15 +189,13 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
         conversationId.value = response.conversationId;
       }
 
-      addMessage(response.content, 'assistant');
+      addMessage(response.content, "assistant");
       emitResponseReceived(response);
     } catch (error) {
-      console.error('Chat error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      addMessage(
-        t('chatbot.messages.error'),
-        'assistant'
-      );
+      console.error("Chat error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      addMessage(t("chatbot.messages.error"), "assistant");
       emitError(error instanceof Error ? error : new Error(errorMessage));
     } finally {
       isLoading.value = false;
@@ -216,16 +213,16 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
   };
 
   const handleKeydown = (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       sendMessage();
     }
   };
 
   const formatTime = (timestamp: Date) => {
-    return timestamp.toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return timestamp.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -233,19 +230,19 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
      Event Emitters
      ========================================================================== */
   const emitToggle = (isOpen: boolean) => {
-    toggleCallbacks.value.forEach(callback => callback(isOpen));
+    toggleCallbacks.value.forEach((callback) => callback(isOpen));
   };
 
   const emitMessageSent = (message: ChatMessage) => {
-    messageSentCallbacks.value.forEach(callback => callback(message));
+    messageSentCallbacks.value.forEach((callback) => callback(message));
   };
 
   const emitResponseReceived = (response: any) => {
-    responseReceivedCallbacks.value.forEach(callback => callback(response));
+    responseReceivedCallbacks.value.forEach((callback) => callback(response));
   };
 
   const emitError = (error: Error) => {
-    errorCallbacks.value.forEach(callback => callback(error));
+    errorCallbacks.value.forEach((callback) => callback(error));
   };
 
   /* ==========================================================================
@@ -272,10 +269,7 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
      ========================================================================== */
   // 초기 환영 메시지 추가
   nextTick(() => {
-    addMessage(
-      t('chatbot.messages.welcome'),
-      'assistant'
-    );
+    addMessage(t("chatbot.messages.welcome"), "assistant");
   });
 
   /* ==========================================================================
@@ -290,7 +284,7 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
     messages,
     conversationId,
     quickTopics,
-    
+
     // 액션
     openChatbot,
     closeChatbot,
@@ -298,11 +292,11 @@ export function useChatBot(options: UseChatBotOptions = {}): UseChatBotReturn {
     sendMessage,
     selectTopic,
     addMessage,
-    
+
     // 유틸리티
     formatTime,
     handleKeydown,
-    
+
     // 이벤트 핸들러
     onToggle,
     onMessageSent,

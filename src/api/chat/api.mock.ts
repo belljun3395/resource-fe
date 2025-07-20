@@ -1,14 +1,11 @@
-import type {
-  AgentResponse,
-  Conversation,
-} from "@/api/chat/dto";
+import type { AgentResponse, Conversation } from "@/api/chat/dto";
 
-const createMockResponse = (message: string): AgentResponse => {
+const createMockResponse = (_message: string): AgentResponse => {
   const responses = [
     "안녕하세요! 무엇을 도와드릴까요?",
     "네, 어떤 것이 궁금하신가요?",
     "도움이 필요하시면 언제든 말씀해주세요!",
-    "안녕하세요! 어떤 질문이 있으신가요?"
+    "안녕하세요! 어떤 질문이 있으신가요?",
   ];
 
   const content = responses[Math.floor(Math.random() * responses.length)];
@@ -21,12 +18,11 @@ const createMockResponse = (message: string): AgentResponse => {
     sources: [],
     metadata: {
       responseTime: "150ms",
-      toolsUsed: ["chat_assistant"]
+      toolsUsed: ["chat_assistant"],
     },
-    status: "SUCCESS"
+    status: "SUCCESS",
   };
 };
-
 
 const createMockConversations = (): Conversation[] => [
   {
@@ -37,7 +33,7 @@ const createMockConversations = (): Conversation[] => [
     createdAt: "2024-01-15T09:00:00Z",
     lastActivity: "2024-01-15T10:30:00Z",
     messageCount: 5,
-    isActive: true
+    isActive: true,
   },
   {
     id: "conv-2",
@@ -47,7 +43,7 @@ const createMockConversations = (): Conversation[] => [
     createdAt: "2024-01-14T14:20:00Z",
     lastActivity: "2024-01-14T15:45:00Z",
     messageCount: 8,
-    isActive: false
+    isActive: false,
   },
   {
     id: "conv-3",
@@ -57,20 +53,20 @@ const createMockConversations = (): Conversation[] => [
     createdAt: "2024-01-13T11:10:00Z",
     lastActivity: "2024-01-13T12:00:00Z",
     messageCount: 3,
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
 
 const mockData = {
   createMockResponse,
   createMockConversations,
-  
+
   health: {
     status: "UP",
     service: "AI Agent",
     timestamp: Date.now(),
-    activeConversations: 25
-  }
+    activeConversations: 25,
+  },
 };
 
 export default mockData;

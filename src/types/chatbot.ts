@@ -15,7 +15,7 @@ export interface ChatMessage {
   /** 메시지 고유 ID */
   id: string;
   /** 메시지 타입 (사용자 또는 어시스턴트) */
-  type: 'user' | 'assistant';
+  type: "user" | "assistant";
   /** 메시지 내용 */
   content: string;
   /** 메시지 생성 시간 */
@@ -82,7 +82,7 @@ export interface AgentResponse {
     [key: string]: any;
   };
   /** 응답 상태 */
-  status: 'SUCCESS' | 'ERROR' | 'PROCESSING';
+  status: "SUCCESS" | "ERROR" | "PROCESSING";
 }
 
 /**
@@ -106,7 +106,6 @@ export interface Conversation {
   /** 활성 상태 */
   isActive: boolean;
 }
-
 
 /* ==========================================================================
    에러 관련 인터페이스
@@ -149,11 +148,11 @@ export interface ChatBotProps {
  */
 export interface ChatBotEmits {
   /** 챗봇 열림/닫힘 상태 변경 */
-  (e: 'toggle', isOpen: boolean): void;
+  (e: "toggle", isOpen: boolean): void;
   /** 메시지 전송 */
-  (e: 'message-sent', message: ChatMessage): void;
+  (e: "message-sent", message: ChatMessage): void;
   /** 응답 수신 */
-  (e: 'response-received', response: AgentResponse): void;
+  (e: "response-received", response: AgentResponse): void;
   /** 에러 발생 */
-  (e: 'error', error: Error): void;
+  (e: "error", error: Error): void;
 }

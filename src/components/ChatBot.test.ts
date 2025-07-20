@@ -97,12 +97,16 @@ describe("ChatBot", () => {
   describe("컴포넌트 렌더링", () => {
     it("로그인된 사용자에게만 표시된다", () => {
       const wrapper = createWrapper();
-      expect(wrapper.find('[data-testid="chatbot-container"]').exists()).toBe(true);
+      expect(wrapper.find('[data-testid="chatbot-container"]').exists()).toBe(
+        true
+      );
     });
 
     it("초기 상태에서 챗봇 토글 버튼이 표시된다", () => {
       const wrapper = createWrapper();
-      expect(wrapper.find('[data-testid="chatbot-toggle"]').exists()).toBe(true);
+      expect(wrapper.find('[data-testid="chatbot-toggle"]').exists()).toBe(
+        true
+      );
     });
 
     it("Props를 올바르게 전달받는다", () => {
@@ -119,13 +123,15 @@ describe("ChatBot", () => {
   describe("챗봇 상태 관리", () => {
     it("챗봇이 열렸을 때 창이 표시된다", async () => {
       const wrapper = createWrapper({ initialOpen: true });
-      expect(wrapper.find('[data-testid="chatbot-window"]').exists()).toBe(true);
+      expect(wrapper.find('[data-testid="chatbot-window"]').exists()).toBe(
+        true
+      );
     });
 
     it("챗봇이 확장되었을 때 본문이 표시된다", async () => {
-      const wrapper = createWrapper({ 
-        initialOpen: true, 
-        initialExpanded: true 
+      const wrapper = createWrapper({
+        initialOpen: true,
+        initialExpanded: true,
       });
       expect(wrapper.find(".chatbot-body").exists()).toBe(true);
     });
@@ -140,14 +146,18 @@ describe("ChatBot", () => {
 
     it("컨트롤 버튼들이 올바르게 렌더링된다", () => {
       const wrapper = createWrapper({ initialOpen: true });
-      expect(wrapper.find('[data-testid="chatbot-expand-button"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="chatbot-close-button"]').exists()).toBe(true);
+      expect(
+        wrapper.find('[data-testid="chatbot-expand-button"]').exists()
+      ).toBe(true);
+      expect(
+        wrapper.find('[data-testid="chatbot-close-button"]').exists()
+      ).toBe(true);
     });
 
     it("메시지 입력창이 올바른 placeholder를 가진다", () => {
-      const wrapper = createWrapper({ 
-        initialOpen: true, 
-        initialExpanded: true 
+      const wrapper = createWrapper({
+        initialOpen: true,
+        initialExpanded: true,
       });
       const input = wrapper.find('[data-testid="message-input"]');
       expect(input.attributes("placeholder")).toBe("메시지를 입력하세요...");
@@ -156,23 +166,29 @@ describe("ChatBot", () => {
 
   describe("빠른 주제 버튼", () => {
     it("메시지가 적을 때 주제 버튼들이 표시된다", () => {
-      const wrapper = createWrapper({ 
-        initialOpen: true, 
-        initialExpanded: true 
+      const wrapper = createWrapper({
+        initialOpen: true,
+        initialExpanded: true,
       });
       expect(wrapper.find('[data-testid="topic-buttons"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="topic-button-dashboard"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="topic-button-insights"]').exists()).toBe(true);
+      expect(
+        wrapper.find('[data-testid="topic-button-dashboard"]').exists()
+      ).toBe(true);
+      expect(
+        wrapper.find('[data-testid="topic-button-insights"]').exists()
+      ).toBe(true);
     });
   });
 
   describe("접근성", () => {
     it("버튼들에 올바른 aria-label이 설정되어 있다", () => {
       const wrapper = createWrapper({ initialOpen: true });
-      
-      const expandButton = wrapper.find('[data-testid="chatbot-expand-button"]');
+
+      const expandButton = wrapper.find(
+        '[data-testid="chatbot-expand-button"]'
+      );
       const closeButton = wrapper.find('[data-testid="chatbot-close-button"]');
-      
+
       expect(expandButton.attributes("aria-label")).toBeTruthy();
       expect(closeButton.attributes("aria-label")).toBeTruthy();
     });
@@ -196,9 +212,9 @@ describe("ChatBot", () => {
     it("컴포넌트가 마운트될 때 초기화 함수가 호출된다", () => {
       const { useChatBot } = require("@/composables/useChatBot");
       const mockUseChatBot = useChatBot as any;
-      
+
       createWrapper();
-      
+
       expect(mockUseChatBot).toHaveBeenCalledWith({
         customTopics: undefined,
         enableWelcomeMessage: true,
